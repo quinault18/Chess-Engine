@@ -37,4 +37,4 @@ move: *.o *.a main
 
 clean:
 	rm -f *.a *.o main
-	rm -f $(BIN)/*.a $(BIN)/*.o $(BIN)/main
+	rm -f $(BIN)/*
