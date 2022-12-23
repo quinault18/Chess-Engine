@@ -1,7 +1,7 @@
 #ifndef BASEPIECE_H
 #define BASEPIECE_H
 
-
+#include <vector>
 #include <string>
 
 class BasePiece {

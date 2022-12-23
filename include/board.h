@@ -40,8 +40,10 @@ public:
     // Return 8x8 board
     std::vector<std::vector<Square> > getBoard();
 
-    // Overloading access operator []
+    // Overloading access operator [] for integer indexing
     std::vector<Square>& operator[](int idx);
+
+    Square& getSquare(std::tuple<int, int> loc);
 
     // Getter for whiteToPlay
     bool getWhiteToPlay();

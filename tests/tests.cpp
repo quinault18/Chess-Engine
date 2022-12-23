@@ -3,7 +3,7 @@
 #include "square.h"
 #include "basepiece.h"
 #include "board.h"
-
+#include "move.h"
 
 
 TEST(SquareTest, getLocation) {
@@ -31,6 +31,39 @@ TEST(BasePieceTests, init) {
     BasePiece bp("wp");
     EXPECT_EQ(bp.getID(), "wp");
 }
+
+TEST(MoveTests, testID) {
+    std::tuple<int, int> start = std::make_tuple(1, 1);
+    std::tuple<int, int> end = std::make_tuple(3, 3);
+    Move move(start, end, nullptr, nullptr);
+    EXPECT_EQ(move.getMoveID(), 1133);
+}
+
+TEST(MoveTests, testGetRankFile) {
+    std::tuple<int, int> start = std::make_tuple(1, 1);
+    std::tuple<int, int> end = std::make_tuple(3, 3);
+    Move move(start, end, nullptr, nullptr);
+
+    EXPECT_EQ(move.getRankFile(3, 3), "d5");
+    EXPECT_EQ(move.getRankFile(0, 0), "a8");
+    EXPECT_EQ(move.getRankFile(2, 6), "g6");
+}
+
+TEST(MoveTests, testPieceMoved) {
+    Board board("rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1");
+    std::tuple<int, int> start = std::make_tuple(1, 1);
+    std::tuple<int, int> end = std::make_tuple(3, 1);
+    Move move(start, end, board.getSquare(start).getPiece(), nullptr);
+
+    EXPECT_EQ(move.pieceMoved->getID(), "bp");  
+
+    start = std::make_tuple(7, 4);
+    end = std::make_tuple(0, 0);
+    Move m(start, end, board.getSquare(start).getPiece(), nullptr);
+
+    EXPECT_EQ(m.pieceMoved->getID(), "wK");
+}
+
 
 TEST(BoardTests, testBoardSize) {
     Board board;

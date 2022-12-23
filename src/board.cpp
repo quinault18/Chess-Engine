@@ -107,7 +107,7 @@ return board;
 }
 
 std::vector<Square>& Board::operator[](int idx) {
-return board[idx];
+    return board[idx];
 }
 
 void Board::print() {
@@ -127,4 +127,8 @@ void Board::print() {
 
 bool Board::getWhiteToPlay() {
     return whiteToPlay;
+}
+
+Square& Board::getSquare(std::tuple<int, int> loc) {
+    return board[std::get<0>(loc)][std::get<1>(loc)];
 }
