@@ -12,6 +12,7 @@ FetchContent_MakeAvailable(googletest)
 enable_testing()
 
 
-add_executable(tests tests.cpp ../src/square.cpp)
+add_executable(tests tests.cpp ../src/square.cpp ../src/basepiece.cpp ../src/board.cpp)
+
 target_link_libraries(tests GTest::gtest_main)
 add_test(NAME tests COMMAND tests)

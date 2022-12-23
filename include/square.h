@@ -2,16 +2,29 @@
 #define SQUARE_H
 
 #include <tuple>
+#include "basepiece.h"
 
 class Square {
 private:
+
+    // Chessboard squares have a location in form (rank, file)
     std::tuple<int, int> location;
+    // Squares store a piece. If square is empty, piece is nullptr
+    BasePiece* piece;
 
 public:
 
-    Square(int rank, int file);
+    // Squares take in a (rank, file) location and a piece
+    Square(int rank, int file, BasePiece* piece = nullptr);
+
+    // Returns (rank, file) location of this square
     std::tuple<int, int> getLocation();
 
+    // Returns the piece on this square
+    BasePiece* getPiece();
+
+    // Set the piece of this square
+    void setPiece(BasePiece* pieceToSet);
 };
 
 #endif

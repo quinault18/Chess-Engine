@@ -3,6 +3,8 @@
 build/
 *.cmake
 
+# ignore .vscode workspace
+.vscode/
 
 *.a
 *.o
