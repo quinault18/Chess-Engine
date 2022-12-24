@@ -7,6 +7,8 @@ class Queen : public BasePiece {
 
 public: 
     Queen(std::string id);
+    ~Queen() override;
+    std::vector<Move> getValidMoves() override;
 
 };
 
