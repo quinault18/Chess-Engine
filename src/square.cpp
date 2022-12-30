@@ -26,7 +26,7 @@ void Square::setPiece(BasePiece* pieceToSet) {
             piece = new Rook(id, position);
             break;
         case 'N':
-            piece = new Knight(id);
+            piece = new Knight(id, position);
             break;
         case 'B':  
             piece = new Bishop(id, position);
