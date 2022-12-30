@@ -4,6 +4,26 @@ Square::Square(int rank, int file, BasePiece* piece) : piece(piece) {
     location = std::make_tuple(rank, file);
 }
 
+
+Square::~Square() {
+    if (!piece) {
+        delete piece;
+    }
+}
+
+
+Square::Square(const Square& other) {
+    location = other.location;
+    piece = other.piece;
+}
+
+Square& Square::operator=(Square other) {
+    std::swap(location, other.location);
+    std::swap(piece, other.piece);
+
+    return *this;
+}
+
 std::tuple<int, int> Square::getLocation() {
     return location;
 }

@@ -28,8 +28,15 @@ public:
     // Default constructor - loads 8x8 board of empty squares
     Board();
 
+
     // If a FEN string is passed, load the board with the passed string
     Board(std::string fen);
+
+    ~Board();
+
+    Board(const Board& other);
+
+    Board& operator=(Board otherr);
 
     // Loads the board from a FEN string
     void loadFromFEN(std::string fen);

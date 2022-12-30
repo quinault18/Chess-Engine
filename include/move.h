@@ -29,6 +29,12 @@ class Move {
         */
         Move(std::tuple<int, int> start, std::tuple<int, int> end, BasePiece* pieceMoved, BasePiece* pieceCaptured);
 
+        ~Move();
+
+        Move(const Move& other);
+
+        Move& operator=(Move other);
+
         // Stores the piece that moved and the piece that was captured, if applicable
         BasePiece* pieceMoved;
         BasePiece* pieceCaptured;

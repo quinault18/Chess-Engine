@@ -45,6 +45,10 @@ class BasePiece {
         BasePiece(std::string id, std::tuple<int, int> pos);
         virtual ~BasePiece() = default;
 
+        BasePiece(const BasePiece& other);
+
+        BasePiece& operator=(BasePiece other);
+
         /*
         Returns the id of this piece
         */

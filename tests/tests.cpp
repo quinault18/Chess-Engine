@@ -19,7 +19,7 @@ TEST(SquareTest, getBasePieceEmpty) {
     EXPECT_EQ(s.getPiece(), nullptr);
 }
 
-TEST(SquareTest, getBasPiece) {
+TEST(SquareTest, getBasePiece) {
     
     BasePiece bp("wp");
     Square s(1, 5, &bp);
@@ -91,6 +91,32 @@ TEST(BoardTests, testPieceLocations) {
     EXPECT_EQ(b[7][3].getPiece()->getID(), "wQ");
     EXPECT_FALSE(b[7][6].getPiece()->getID() == "bK");
 }
+
+TEST(BoardTests, testClearBoard) {
+    Board b("rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1");
+    b.print();
+
+    b.clearBoard();
+    b.print();
+
+    b.loadFromFEN("r2qkb1r/pp1nnpp1/2p1p2p/3pPb2/3P4/5N2/PPPNBPPP/R1BQ1RK1 b kq - 0 8");
+    b.print();
+}
+
+TEST(BoardTests, testCopyConstructor) {
+    Board b("r2qkb1r/pp1nnpp1/2p1p2p/3pPb2/3P4/5N2/PPPNBPPP/R1BQ1RK1 b kq - 0 8");
+    Board copy(b);
+
+    EXPECT_EQ(b.getWhiteToPlay(), copy.getWhiteToPlay());
+}
+
+TEST(BoardTests, testAssignmentOperator) {
+    Board b("r2qkb1r/pp1nnpp1/2p1p2p/3pPb2/3P4/5N2/PPPNBPPP/R1BQ1RK1 b kq - 0 8");
+    Board b1 = b;
+    b1.print();
+
+}
+
 
 TEST(PieceTestsQueen, testGetValidMoves) {
     Board b("rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1");

@@ -2,6 +2,8 @@
 
 Board::Board() {
 
+    initBoard();
+
     // This is the starting position of a standard game of chess
     std::string startingPosition = "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1";
     loadFromFEN(startingPosition);
@@ -9,6 +11,7 @@ Board::Board() {
 
 Board::Board(std::string fen) {
 
+    initBoard();
     // Then load the pieces based on the FEN
     loadFromFEN(fen);
 }
@@ -24,12 +27,23 @@ void Board::initBoard() {
     }
 }
 
+Board::~Board() {}
+
+
+Board::Board(const Board& other) {
+    board = other.board;
+    whiteToPlay = other.whiteToPlay;
+}
+
+Board& Board::operator=(Board other) {
+    std::swap(board, other.board);
+    std::swap(whiteToPlay, other.whiteToPlay);
+
+    return *this;
+}
 
 void Board::loadFromFEN(std::string fen) {
 
-    // First load the squares
-    initBoard();
-    
     // Break FEN string into components
     std::vector<std::string> parsedFEN = parseFEN(fen);
 

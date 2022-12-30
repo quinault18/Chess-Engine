@@ -19,6 +19,34 @@ Move::Move(std::tuple<int, int> start, std::tuple<int, int> end, BasePiece* piec
     }
 }
 
+Move::Move(const Move& other) {
+    id = other.id;
+    pieceMoved = other.pieceMoved;
+    pieceCaptured = other.pieceCaptured;
+    start = other.start;
+    end = other.end;
+}
+
+Move& Move::operator=(Move other) {
+    std::swap(id, other.id);
+    std::swap(pieceMoved, other.pieceMoved);
+    std::swap(pieceCaptured, other.pieceCaptured);
+    std::swap(start, other.start);
+    std::swap(end, other.end);
+
+    return *this;
+}
+
+Move::~Move() {
+    if (!pieceMoved) {
+        delete pieceMoved;
+    }
+    if (!pieceCaptured) {
+        delete pieceCaptured;
+    }
+}
+
+
 // Move id is used to generate a unique identifier for each move
 int Move::generateMoveID(std::tuple<int, int> t1, std::tuple<int, int> t2) {
     int thousand = std::get<0>(t1);

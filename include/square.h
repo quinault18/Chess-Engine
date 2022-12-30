@@ -23,6 +23,12 @@ public:
     // Squares take in a (rank, file) location and a piece
     Square(int rank, int file, BasePiece* piece = nullptr);
 
+    ~Square();
+    
+    Square(const Square& other);
+
+    Square& operator=(Square other);
+    
     // Returns (rank, file) location of this square
     std::tuple<int, int> getLocation();
 
