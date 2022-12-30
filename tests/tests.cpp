@@ -133,3 +133,38 @@ TEST(PieceTestsKing, testGetValidMoves) {
     EXPECT_EQ(moves1.size(), 8);
     EXPECT_EQ(movesBK.size(), 5);
 }
+
+TEST(PieceTestsRook, testGetValidMoves) {
+    Board b("rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1");
+    std::vector<Move> movesA8 = b[0][0].getPiece()->getValidMoves(&b);
+    std::vector<Move> movesH8 = b[0][7].getPiece()->getValidMoves(&b);
+    std::vector<Move> movesA1 = b[7][0].getPiece()->getValidMoves(&b);
+    std::vector<Move> movesH1 = b[7][7].getPiece()->getValidMoves(&b);
+
+    EXPECT_EQ(movesA8.size(), 0);
+    EXPECT_EQ(movesH8.size(), 0);
+    EXPECT_EQ(movesA1.size(), 0);
+    EXPECT_EQ(movesH1.size(), 0);
+
+    Board b1("r1bqkb1r/1pppppp1/1n3n2/p6p/P6P/2N2N2/1PPPPPP1/R1BQKB1R w KQkq - 0 1");
+    movesA8 = b1[0][0].getPiece()->getValidMoves(&b1);
+    movesH8 = b1[0][7].getPiece()->getValidMoves(&b1);
+    movesA1 = b1[7][0].getPiece()->getValidMoves(&b1);
+    movesH1 = b1[7][7].getPiece()->getValidMoves(&b1);
+
+    EXPECT_EQ(movesA8.size(), 3);
+    EXPECT_EQ(movesH8.size(), 3);
+    EXPECT_EQ(movesA1.size(), 3);
+    EXPECT_EQ(movesH1.size(), 3);
+
+    Board b2("r1bqkb1r/1pppppp1/1n3n2/P6P/p6p/2N2N2/1PPPPPP1/R1BQKB1R w KQkq - 0 1");
+    movesA8 = b2[0][0].getPiece()->getValidMoves(&b2);
+    movesH8 = b2[0][7].getPiece()->getValidMoves(&b2);
+    movesA1 = b2[7][0].getPiece()->getValidMoves(&b2);
+    movesH1 = b2[7][7].getPiece()->getValidMoves(&b2);
+
+    EXPECT_EQ(movesA8.size(), 4);
+    EXPECT_EQ(movesH8.size(), 4);
+    EXPECT_EQ(movesA1.size(), 4);
+    EXPECT_EQ(movesH1.size(), 4);
+}
