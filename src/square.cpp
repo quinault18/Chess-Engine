@@ -13,6 +13,7 @@ BasePiece* Square::getPiece() {
 }
 
 void Square::setPiece(BasePiece* pieceToSet) {
+
     std::string id = pieceToSet->getID();
     std::tuple<int, int> position = pieceToSet->getPosition();
     switch (id[1]) {
@@ -32,7 +33,7 @@ void Square::setPiece(BasePiece* pieceToSet) {
             piece = new Bishop(id, position);
             break;
         case 'p':  
-            piece = new Pawn(id);
+            piece = new Pawn(id, position);
             break;
         default:
             break;
