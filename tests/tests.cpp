@@ -119,3 +119,17 @@ TEST(PieceTestsQueen, testGetValidMoves) {
 
     EXPECT_EQ(ms1.size(), 13);
 }
+
+TEST(PieceTestsKing, testGetValidMoves) {
+    Board b("rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1");
+    std::vector<Move> moves = b[7][4].getPiece()->getValidMoves(&b);
+
+    EXPECT_EQ(moves.size(), 0);
+
+    Board b1("5k2/8/8/8/3K4/8/8/8 w - - 0 1");
+    std::vector<Move> moves1 = b1[4][3].getPiece()->getValidMoves(&b1);
+    std::vector<Move> movesBK = b1[0][5].getPiece()->getValidMoves(&b1);
+    
+    EXPECT_EQ(moves1.size(), 8);
+    EXPECT_EQ(movesBK.size(), 5);
+}
