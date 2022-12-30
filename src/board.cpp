@@ -214,3 +214,44 @@ std::vector<Move> King::getValidMoves(Board* board) {
 
     return moves;
 }
+
+/*
+This method is from the Rook class and is here as Board is forward declared in Rook
+*/
+std::vector<Move> Rook::getValidMoves(Board* board) {
+    std::vector<Move> moves;
+    // Iterate over directions looking for valid moves
+    for (std::tuple<int, int> dir : directions) {
+        for (int i = 1; i < 8; i++) {
+
+            // Ending coordinates of move
+            int endRow = std::get<0>(position) + std::get<0>(dir) * i;
+            int endCol = std::get<1>(position) + std::get<1>(dir) * i;
+            std::tuple<int, int> end = std::make_tuple(endRow, endCol);
+
+            // Error checking bounds making sure move ends on board
+            if (0 <= endRow && endRow < 8 && 0 <= endCol && endCol < 8) {
+
+                // Checking if (endRow, endCol) is empty
+                if (board[0][endRow][endCol].getPiece() == nullptr) {
+                    Move move(position, end, this, board[0][endRow][endCol].getPiece());
+                    moves.push_back(move);
+                }
+
+                // If not empty, piece must be other color. Can not move beyond that piece
+                else if (board[0][endRow][endCol].getPiece()->getID()[0] != this->getID()[0]) {
+                    Move move(position, end, this, board[0][endRow][endCol].getPiece());
+                    moves.push_back(move);
+                    break;
+                }
+
+                // If piece is same color, stop looking for moves in this direction
+                else {
+                    break;
+                }
+            }         
+        }
+    }
+    return moves;
+
+}
