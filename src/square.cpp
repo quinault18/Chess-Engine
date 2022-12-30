@@ -23,7 +23,7 @@ void Square::setPiece(BasePiece* pieceToSet) {
             piece = new King(id, position);
             break;
         case 'R':
-            piece = new Rook(id);
+            piece = new Rook(id, position);
             break;
         case 'N':
             piece = new Knight(id);
