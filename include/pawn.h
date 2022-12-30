@@ -6,7 +6,7 @@
 class Pawn : public BasePiece {
 
     public: 
-        Pawn(std::string id);
+        Pawn(std::string id, std::tuple<int, int> position);
         ~Pawn() override;
         std::vector<Move> getValidMoves(Board* board) override;
 };

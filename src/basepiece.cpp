@@ -1,5 +1,6 @@
 #include "basepiece.h"
 
+
 BasePiece::BasePiece(std::string id) : id(id) {}
 
 

@@ -29,6 +29,7 @@ void Board::loadFromFEN(std::string fen) {
 
     // First load the squares
     initBoard();
+    
     // Break FEN string into components
     std::vector<std::string> parsedFEN = parseFEN(fen);
 
@@ -83,6 +84,15 @@ void Board::loadFromFEN(std::string fen) {
     }
 }
 
+void Board::clearBoard() {
+    for (int i = 0; i < 8; i++) {
+        
+        for (int j = 0; j < 8; j++) {
+            board[i][j] = Square(i, j, nullptr);
+        }
+    }
+}
+
 std::vector<std::string> Board::parseFEN(std::string fen) {
 
     // FEN strings are split by a space, add parsed segments to vector
@@ -124,6 +134,10 @@ void Board::print() {
         }
         std::cout << rank << std::endl;
     }
+}
+
+void Board::makeMove(Move move) {
+    whiteToPlay = !whiteToPlay;
 }
 
 bool Board::getWhiteToPlay() {
@@ -323,5 +337,56 @@ std::vector<Move> Knight::getValidMoves(Board* board) {
             }         
         }
     }
+    return moves;
+}
+
+
+std::vector<Move> Pawn::getValidMoves(Board* board) {
+    std::vector<Move> moves;
+
+    // Pawns can only move up board if white and down board if black
+    int moveAmount = (board->getWhiteToPlay()) ? -1 : 1;
+    int startRow = (board->getWhiteToPlay()) ? 6 : 1;
+    char enemyColor = (board->getWhiteToPlay()) ? 'b' : 'w';
+
+    // Pawns can only move forward
+    if (std::get<0>(position) + moveAmount <= 7 && std::get<0>(position) + moveAmount >= 0) {
+        // Square infront of pawn must be empty to move forward
+        if (board[0][std::get<0>(position) + moveAmount][std::get<1>(position)].getPiece() == nullptr) {
+            // Tuple of the ending square's position
+            std::tuple<int, int> end = std::make_tuple(std::get<0>(position) + moveAmount, std::get<1>(position));
+            Move move(position, end, this, board[0][std::get<0>(end)][std::get<1>(end)].getPiece());
+            moves.push_back(move);
+
+            // Pawns can move forward two squares if pawn has not moved yet
+            if (std::get<0>(position) == startRow && board[0][std::get<0>(position) + (2 * moveAmount)][std::get<1>(position)].getPiece() == nullptr) {
+                std::tuple<int, int> endSq = std::make_tuple(std::get<0>(position) + (2 * moveAmount), std::get<1>(position));
+                Move twoSquarePawnMove(position, endSq, this, board[0][std::get<0>(position) + (2 * moveAmount)][std::get<1>(position)].getPiece());
+                moves.push_back(twoSquarePawnMove);
+            }
+        }   
+
+        // Pawns can only capture opposing pieces diagonally
+
+        // Capture to left
+        if (std::get<1>(position) - 1 >= 0) {
+            if (board[0][std::get<0>(position) + moveAmount][std::get<1>(position) - 1].getPiece() != nullptr && board[0][std::get<0>(position) + moveAmount][std::get<1>(position) - 1].getPiece()->getID()[0] == enemyColor) {
+                std::tuple<int, int> end = std::make_tuple(std::get<0>(position) + moveAmount, std::get<1>(position) - 1);
+                Move leftCapture(position, end, this, board[0][std::get<0>(position) + moveAmount][std::get<1>(position) - 1].getPiece());
+                moves.push_back(leftCapture);
+            }
+        }   
+
+        // Capture to right
+        if (std::get<1>(position) + 1 <= 7) {
+            if (board[0][std::get<0>(position) + moveAmount][std::get<1>(position) + 1].getPiece() != nullptr && board[0][std::get<0>(position) + moveAmount][std::get<1>(position) + 1].getPiece()->getID()[0] == enemyColor) {
+                std::tuple<int, int> end = std::make_tuple(std::get<0>(position) + moveAmount, std::get<1>(position) + 1);
+                Move rightCapture(position, end, this, board[0][std::get<0>(position) + moveAmount][std::get<1>(position) + 1].getPiece());
+                moves.push_back(rightCapture);     
+            }      
+        }   
+    }
+
+
     return moves;
 }

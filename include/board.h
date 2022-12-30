@@ -34,6 +34,9 @@ public:
     // Loads the board from a FEN string
     void loadFromFEN(std::string fen);
 
+    // Clears the board
+    void clearBoard();
+
     // Print out representation of board
     void print();
 
@@ -44,6 +47,8 @@ public:
     std::vector<Square>& operator[](int idx);
 
     Square& getSquare(std::tuple<int, int> loc);
+
+    void makeMove(Move move);
 
     // Getter for whiteToPlay
     bool getWhiteToPlay();

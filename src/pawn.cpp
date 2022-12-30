@@ -1,10 +1,6 @@
 #include "pawn.h"
 
-Pawn::Pawn(std::string id) : BasePiece(id) { std::cout << "Pawn" << std::endl; }
+Pawn::Pawn(std::string id, std::tuple<int, int> position) : BasePiece(id, position) {}
 
 Pawn::~Pawn() {}
 
-std::vector<Move> Pawn::getValidMoves(Board* board) {
-    std::vector<Move> moves;
-    return moves;
-}
