@@ -29,7 +29,7 @@ void Square::setPiece(BasePiece* pieceToSet) {
             piece = new Knight(id);
             break;
         case 'B':  
-            piece = new Bishop(id);
+            piece = new Bishop(id, position);
             break;
         case 'p':  
             piece = new Pawn(id);
