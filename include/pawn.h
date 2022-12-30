@@ -8,7 +8,7 @@ class Pawn : public BasePiece {
     public: 
         Pawn(std::string id);
         ~Pawn() override;
-        std::vector<Move> getValidMoves() override;
+        std::vector<Move> getValidMoves(Board* board) override;
 };
 
 #endif

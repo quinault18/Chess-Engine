@@ -4,7 +4,7 @@ Bishop::Bishop(std::string id) : BasePiece(id) { std::cout << "Bishop" << std::e
 
 Bishop::~Bishop() {}
 
-std::vector<Move> Bishop::getValidMoves() {
+std::vector<Move> Bishop::getValidMoves(Board* board) {
     std::vector<Move> moves;
     return moves;
 }

@@ -74,17 +74,6 @@ TEST(BoardTests, testBoardSize) {
     }
 }
 
-TEST(BoardTests, testSquarePieces) {
-    Board board;
-    for (int i = 0; i < 8; i++) {
-        for (int j = 0; j < 8; j++) {
-            std::tuple<int, int> loc = std::make_tuple(i, j);
-            EXPECT_EQ(board[i][j].getLocation(), loc);
-            EXPECT_EQ(board[i][j].getPiece(), nullptr);
-        }
-    }
-}
-
 
 TEST(BoardTests, testWhiteToPlay) {
     Board b("rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1");
@@ -101,4 +90,32 @@ TEST(BoardTests, testPieceLocations) {
 
     EXPECT_EQ(b[7][3].getPiece()->getID(), "wQ");
     EXPECT_FALSE(b[7][6].getPiece()->getID() == "bK");
+}
+
+TEST(PieceTestsQueen, testGetValidMoves) {
+    Board b("rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1");
+    std::vector<Move> moves = b[7][3].getPiece()->getValidMoves(&b);
+
+    EXPECT_EQ(moves.size(), 0);
+
+    Board b1("rnbqkbnr/pppppppp/8/8/8/4P3/PPPP1PPP/RNBQKBNR b KQkq - 0 1");
+    std::vector<Move> m = b1[7][3].getPiece()->getValidMoves(&b1);
+
+    EXPECT_EQ(m.size(), 4);
+
+    Board b2("rnbqkbnr/ppppp1pp/8/8/P7/4Pp2/1PPP1PPP/RNBQKBNR w KQkq - 0 4");
+    std::vector<Move> ms = b2[7][3].getPiece()->getValidMoves(&b2);
+
+    EXPECT_EQ(ms.size(), 2);
+
+    Board b3("8/8/8/4Q3/8/8/8/8 w - - 0 1");
+    std::vector<Move> ms2 = b3[3][4].getPiece()->getValidMoves(&b3);
+
+    EXPECT_EQ(ms2.size(), 27);
+
+    Board board("r1b1k1nr/pppp1qpp/2n5/b7/4P3/1QPp1N2/P4PPP/RNB2RK1 w kq - 0 10");
+
+    std::vector<Move> ms1 = board[5][1].getPiece()->getValidMoves(&board);
+
+    EXPECT_EQ(ms1.size(), 13);
 }

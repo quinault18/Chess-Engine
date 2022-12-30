@@ -8,7 +8,7 @@ class Bishop : public BasePiece {
     public:  
         Bishop(std::string id);
         ~Bishop() override;
-        std::vector<Move> getValidMoves() override;
+        std::vector<Move> getValidMoves(Board* board) override;
 
 };
 

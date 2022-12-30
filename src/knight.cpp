@@ -4,7 +4,7 @@ Knight::Knight(std::string id) : BasePiece(id) { std::cout << "Knight" << std::e
 
 Knight::~Knight() {}
 
-std::vector<Move> Knight::getValidMoves() {
+std::vector<Move> Knight::getValidMoves(Board* board) {
     std::vector<Move> moves;
     return moves;
 }

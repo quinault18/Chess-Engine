@@ -8,7 +8,7 @@ class King : public BasePiece {
     public:
         King(std::string id);
         ~King() override;
-        std::vector<Move> getValidMoves() override;
+        std::vector<Move> getValidMoves(Board* board) override;
     
 };
 

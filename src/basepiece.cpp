@@ -2,12 +2,23 @@
 
 BasePiece::BasePiece(std::string id) : id(id) {}
 
-std::vector<Move> BasePiece::getValidMoves()  {
+
+BasePiece::BasePiece(std::string id, std::tuple<int, int> pos) : id(id), position(pos) {}
+
+
+std::vector<Move> BasePiece::getValidMoves(Board* board)  {
     std::vector<Move> moves;
     return moves;
 }
 
+
 std::string BasePiece::getID() {
     return id;
 }
+
+
+std::tuple<int, int> BasePiece::getPosition() {
+    return position;
+}
+
 

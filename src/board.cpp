@@ -1,17 +1,16 @@
 #include "board.h"
 
 Board::Board() {
-    initBoard();
+
+    // This is the starting position of a standard game of chess
+    std::string startingPosition = "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1";
+    loadFromFEN(startingPosition);
 }
 
 Board::Board(std::string fen) {
 
-    // First load the squares
-    initBoard();
-
     // Then load the pieces based on the FEN
     loadFromFEN(fen);
-
 }
 
 void Board::initBoard() {
@@ -28,6 +27,8 @@ void Board::initBoard() {
 
 void Board::loadFromFEN(std::string fen) {
 
+    // First load the squares
+    initBoard();
     // Break FEN string into components
     std::vector<std::string> parsedFEN = parseFEN(fen);
 
@@ -74,7 +75,8 @@ void Board::loadFromFEN(std::string fen) {
                 }
 
                 // Adding piece to board and moving to the next file in this rank
-                board[rank][file].setPiece(new BasePiece(std::string(1, color) + id));
+                std::tuple<int, int> position = std::make_tuple(rank, file);
+                board[rank][file].setPiece(new BasePiece(std::string(1, color) + id, position));
                 file++;
             }
         }
@@ -99,7 +101,6 @@ std::vector<std::string> Board::parseFEN(std::string fen) {
 
     parsed.push_back(fen.substr(index, length));
     return parsed;
-
 }
 
 std::vector<std::vector<Square> > Board::getBoard() {
@@ -131,4 +132,45 @@ bool Board::getWhiteToPlay() {
 
 Square& Board::getSquare(std::tuple<int, int> loc) {
     return board[std::get<0>(loc)][std::get<1>(loc)];
+}
+
+/*
+This method is from the Queen class and is here as Board is forward declared in Queen.
+*/
+std::vector<Move> Queen::getValidMoves(Board* board) {
+    std::vector<Move> moves;
+
+    // Iterate over directions looking for valid moves
+    for (std::tuple<int, int> dir : directions) {
+        for (int i = 1; i < 8; i++) {
+
+            // Ending coordinates of move
+            int endRow = std::get<0>(position) + std::get<0>(dir) * i;
+            int endCol = std::get<1>(position) + std::get<1>(dir) * i;
+            std::tuple<int, int> end = std::make_tuple(endRow, endCol);
+
+            // Error checking bounds making sure move ends on board
+            if (0 <= endRow && endRow < 8 && 0 <= endCol && endCol < 8) {
+
+                // Checking if (endRow, endCol) is empty
+                if (board[0][endRow][endCol].getPiece() == nullptr) {
+                    Move move(position, end, this, board[0][endRow][endCol].getPiece());
+                    moves.push_back(move);
+                }
+
+                // If not empty, piece must be other color. Can not move beyond that piece
+                else if (board[0][endRow][endCol].getPiece()->getID()[0] != this->getID()[0]) {
+                    Move move(position, end, this, board[0][endRow][endCol].getPiece());
+                    moves.push_back(move);
+                    break;
+                }
+
+                // If piece is same color, stop looking for moves in this direction
+                else {
+                    break;
+                }
+            }         
+        }
+    }
+    return moves;
 }

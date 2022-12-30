@@ -14,9 +14,10 @@ BasePiece* Square::getPiece() {
 
 void Square::setPiece(BasePiece* pieceToSet) {
     std::string id = pieceToSet->getID();
+    std::tuple<int, int> position = pieceToSet->getPosition();
     switch (id[1]) {
         case 'Q': 
-            piece = new Queen(id);
+            piece = new Queen(id, position);
             break;
         case 'K':
             piece = new King(id);
