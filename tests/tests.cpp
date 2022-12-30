@@ -216,3 +216,27 @@ TEST(PieceTestsKnight, testGetValidMoves) {
     EXPECT_EQ(movesD5.size(), 7);
     EXPECT_EQ(movesE3.size(), 8);
 }
+
+TEST(PieceTestsPawn, testGetValidMoves) {
+    Board b("8/8/8/8/8/8/P7/8 w - - 0 1");
+
+    std::vector<Move> movesA2 = b[6][0].getPiece()->getValidMoves(&b);
+
+    EXPECT_EQ(movesA2.size(), 2);
+
+    Board b1("8/8/8/8/8/2p5/2P5/8 w - - 0 1");
+    std::vector<Move> movesC2 = b1[6][2].getPiece()->getValidMoves(&b1);
+
+    EXPECT_EQ(movesC2.size(), 0);
+
+    Board b2("8/8/8/8/8/1p1N4/2P5/8 w - - 0 1");
+    movesC2 = b2[6][2].getPiece()->getValidMoves(&b2);
+
+    EXPECT_EQ(movesC2.size(), 3);
+
+    Board b3("8/8/8/8/2N5/1prp4/2P5/8 w - - 0 1");
+    movesC2 = b3[6][2].getPiece()->getValidMoves(&b3);
+
+    EXPECT_EQ(movesC2.size(), 2);
+    
+}
