@@ -13,7 +13,18 @@ private:
     // 8x8 vector of Squares to represent the board
     std::vector<std::vector<Square> > board;
 
+    // Active color
     bool whiteToPlay;
+
+    // Castling rights
+    std::string castlingRights;
+
+    // En Passant targets
+    std::string enPassantTargets;
+
+    // Halfmove and full move count
+    int halfMove;
+    int moveNumber;
 
     // Helper method for loading the board from a FEN string
     std::vector<std::string> parseFEN(std::string fen);
@@ -47,6 +58,9 @@ public:
     // Loads the board from a FEN string
     void loadFromFEN(std::string fen);
 
+    // Create a FEN string from the current position
+    std::string toFEN();
+
     // Clears the board
     void clearBoard();
 
@@ -63,8 +77,12 @@ public:
 
     void makeMove(Move move);
 
-    // Getter for whiteToPlay
+    // Getters for gameplay
     bool getWhiteToPlay();
+    int getHalfMove();
+    int getMoveNumber();
+    std::string getCastlingRights();
+    std::string getEnPassantTargets();
 
     /*
     Generates all possible moves on the board for the color to play.

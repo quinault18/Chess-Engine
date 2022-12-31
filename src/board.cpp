@@ -50,6 +50,12 @@ void Board::loadFromFEN(std::string fen) {
     // Turn to play
     whiteToPlay = (parsedFEN[1] == "w") ? true : false;
 
+    // Castling rights, en passant targets, and move count
+    castlingRights = parsedFEN[2];
+    enPassantTargets = parsedFEN[3];
+    halfMove = std::stoi(parsedFEN[4]);
+    moveNumber = std::stoi(parsedFEN[5]);
+
     int rank = 0;
     int file = 0;
 
@@ -96,6 +102,43 @@ void Board::loadFromFEN(std::string fen) {
             }
         }
     }
+}
+
+std::string Board::toFEN() {
+    std::string fen;
+
+    for (int rank = 0; rank < board.size(); rank++) {
+        int emptyCount = 0;
+        for (int file = 0; file < board[rank].size(); file++) {
+            if (board[rank][file].getPiece() == nullptr) {
+                emptyCount++;
+            }
+            else {
+                if (emptyCount > 0) {
+                    fen += std::to_string(emptyCount);       
+                    emptyCount = 0;
+                }
+                std::string id = board[rank][file].getPiece()->getID();
+                if (id[0] == 'w') {
+                    fen += toupper(id[1]);
+                }
+                else {
+                    fen += tolower(id[1]);
+                }
+            }
+        }
+        if (emptyCount > 0) {
+            fen += std::to_string(emptyCount);
+        }
+        if (rank < 7) {
+            fen += '/';
+        }
+    }
+
+    fen += (getWhiteToPlay()) ? " w" : " b";
+    fen += " KQkq - 0 1";
+
+    return fen;
 }
 
 void Board::clearBoard() {
@@ -179,6 +222,22 @@ void Board::makeMove(Move move) {
 
 bool Board::getWhiteToPlay() {
     return whiteToPlay;
+}
+
+int Board::getHalfMove() {
+    return halfMove;
+}
+
+int Board::getMoveNumber() {
+    return moveNumber;
+}
+
+std::string Board::getCastlingRights() {
+    return castlingRights;
+}
+
+std::string Board::getEnPassantTargets() {
+    return enPassantTargets;
 }
 
 Square& Board::getSquare(std::tuple<int, int> loc) {

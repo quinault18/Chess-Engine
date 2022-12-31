@@ -311,3 +311,14 @@ TEST(MakeMoveTests, makeMove) {
     EXPECT_TRUE(b.getSquare(moves[0].start).getPiece() == nullptr);
     EXPECT_FALSE(b.getWhiteToPlay());
 }
+
+TEST(BoardTests, fenGeneration) {
+    Board b("rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1");
+    std::string fen = "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1";
+    EXPECT_EQ(b.toFEN(), fen);
+    EXPECT_EQ(b.getMoveNumber(), 1);
+
+    Board board("r4rk1/1pqnbpp1/2p1pn1p/p6P/2PP4/3Q1NN1/PP1B1PP1/1K1RR3 w - - 0 1");
+    fen = "r4rk1/1pqnbpp1/2p1pn1p/p6P/2PP4/3Q1NN1/PP1B1PP1/1K1RR3 w KQkq - - 0 1";
+  
+}
