@@ -91,7 +91,7 @@ void Board::loadFromFEN(std::string fen) {
 
                 // Adding piece to board and moving to the next file in this rank
                 std::tuple<int, int> position = std::make_tuple(rank, file);
-                board[rank][file].setPiece(new BasePiece(std::string(1, color) + id, position));
+                board[rank][file].setPieceAtStart(new BasePiece(std::string(1, color) + id, position));
                 file++;
             }
         }
@@ -168,6 +168,12 @@ void Board::print() {
 }
 
 void Board::makeMove(Move move) {
+    // Set end squre piece to moved piece
+    getSquare(move.end).setPiece(move.pieceMoved);
+    // Set position of moved piece to end square
+    move.pieceMoved->setPosition(move.end);
+    // Set start square piece to empty
+    getSquare(move.start).setPiece(nullptr);
     whiteToPlay = !whiteToPlay;
 }
 

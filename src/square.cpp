@@ -39,8 +39,20 @@ std::tuple<int, int> Square::getLocation() {
 BasePiece* Square::getPiece() {
     return piece;
 }
-
 void Square::setPiece(BasePiece* pieceToSet) {
+    if (!pieceToSet){
+        piece = nullptr;
+        return;
+    }
+    piece = pieceToSet;
+}
+
+void Square::setPieceAtStart(BasePiece* pieceToSet) {
+
+    if (!pieceToSet) {
+        piece = nullptr;
+        return;
+    }
 
     std::string id = pieceToSet->getID();
     std::tuple<int, int> position = pieceToSet->getPosition();

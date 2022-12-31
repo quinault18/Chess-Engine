@@ -296,12 +296,18 @@ TEST(MoveGenerationTests, testMoveGeneration) {
     Board b1("rnbqkbnr/p3pppp/2p5/1p1p4/3PP3/2N5/PPP2PPP/R1BQKBNR w KQkq - 0 4");
     moves = b1.generateMoves();
 
-    for (Move move : moves) 
-        std::cout << move << std::endl;
-    std::cout << std::endl;
     b1.makeMove(moves[0]);
     moves = b1.generateMoves();
-    for (Move move : moves)
-        std::cout << move << std::endl;
+ 
+}
 
+TEST(MakeMoveTests, makeMove) {
+    Board b("rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1");
+
+
+    std::vector<Move> moves = b.generateMoves();
+    b.makeMove(moves[0]);
+    EXPECT_EQ(b.getSquare(moves[0].end).getPiece(), moves[0].pieceMoved);
+    EXPECT_TRUE(b.getSquare(moves[0].start).getPiece() == nullptr);
+    EXPECT_FALSE(b.getWhiteToPlay());
 }

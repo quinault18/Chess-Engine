@@ -42,6 +42,9 @@ public:
     // Returns the piece on this square
     BasePiece* getPiece();
 
+    // Setup setting pieces
+    void setPieceAtStart(BasePiece* pieceToSet);
+    
     // Set the piece of this square
     void setPiece(BasePiece* pieceToSet);
 };

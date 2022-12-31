@@ -37,3 +37,8 @@ std::tuple<int, int> BasePiece::getPosition() {
 }
 
 
+void BasePiece::setPosition(std::tuple<int, int> newPos) {
+    position = newPos;
+}
+
+
