@@ -25,6 +25,8 @@ Move::Move(const Move& other) {
     pieceCaptured = other.pieceCaptured;
     start = other.start;
     end = other.end;
+    rowsToRanks = other.rowsToRanks;
+    colsToFiles = other.colsToFiles;
 }
 
 Move& Move::operator=(Move other) {
@@ -33,6 +35,8 @@ Move& Move::operator=(Move other) {
     std::swap(pieceCaptured, other.pieceCaptured);
     std::swap(start, other.start);
     std::swap(end, other.end);
+    std::swap(rowsToRanks, other.rowsToRanks);
+    std::swap(colsToFiles, other.colsToFiles);
 
     return *this;
 }
@@ -44,6 +48,14 @@ Move::~Move() {
     if (!pieceCaptured) {
         delete pieceCaptured;
     }
+}
+
+bool Move::operator==(const Move other) const {
+    return id == other.id && pieceMoved == other.pieceMoved && pieceCaptured == other.pieceCaptured && start == other.start && end == other.end;
+}
+
+bool Move::operator!=(const Move other) const {
+    return !(*this == other);
 }
 
 

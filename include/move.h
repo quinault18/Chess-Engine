@@ -5,6 +5,8 @@
 #include <tuple>
 #include <map>
 #include <string>
+#include <iostream>
+
 // Forward declaration of BasePiece 
 class BasePiece;
 
@@ -29,11 +31,18 @@ class Move {
         */
         Move(std::tuple<int, int> start, std::tuple<int, int> end, BasePiece* pieceMoved, BasePiece* pieceCaptured);
 
-        ~Move();
-
+        /*
+        Rule of Three implementation
+        */
+       ~Move();
         Move(const Move& other);
-
         Move& operator=(Move other);
+
+        /*
+        Equality operator overloading 
+        */
+        bool operator==(const Move other) const;
+        bool operator!=(const Move other) const;
 
         // Stores the piece that moved and the piece that was captured, if applicable
         BasePiece* pieceMoved;
@@ -56,6 +65,11 @@ class Move {
         Used for generating the algebraic chess notation of this move.
         */
         std::string getRankFile(int row, int col);
+
+        /*
+        Print the algebraic chess notation of this move
+        */
+        friend std::ostream& operator<<(std::ostream& os, const Move& move);
 
 };
 

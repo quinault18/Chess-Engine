@@ -23,12 +23,19 @@ public:
     // Squares take in a (rank, file) location and a piece
     Square(int rank, int file, BasePiece* piece = nullptr);
 
+    /*
+    Rule of Three implementation
+    */
     ~Square();
-    
     Square(const Square& other);
-
     Square& operator=(Square other);
     
+    /*
+    Equality operator overloading
+    */
+    bool operator==(const Square other) const;
+    bool operator!=(const Square other) const;
+
     // Returns (rank, file) location of this square
     std::tuple<int, int> getLocation();
 

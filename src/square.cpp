@@ -24,6 +24,14 @@ Square& Square::operator=(Square other) {
     return *this;
 }
 
+bool Square::operator==(const Square other) const {
+    return location == other.location && piece == other.piece;
+}
+
+bool Square::operator!=(const Square other) const {
+    return !(*this == other);
+}
+
 std::tuple<int, int> Square::getLocation() {
     return location;
 }

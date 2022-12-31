@@ -135,6 +135,23 @@ std::vector<Square>& Board::operator[](int idx) {
     return board[idx];
 }
 
+bool operator==(const Board& lhs, const Board& rhs) {
+
+    for (int i = 0; i < lhs.board.size(); i++) {
+        for (int j = 0; j < lhs.board[i].size(); j++) {
+            if (lhs.board[i][j] != rhs.board[i][j]) {
+                return false;
+            }
+        }
+    }
+
+    return true;
+}
+
+bool operator!=(const Board& lhs, const Board& rhs) {
+    return !(lhs == rhs);
+}
+
 void Board::print() {
 
     // Iterate over board and print out piece id, '--' if empty
@@ -161,6 +178,23 @@ bool Board::getWhiteToPlay() {
 Square& Board::getSquare(std::tuple<int, int> loc) {
     return board[std::get<0>(loc)][std::get<1>(loc)];
 }
+
+std::vector<Move> Board::generateMoves() {
+    std::vector<Move> moves;
+    //Board boardCopy(this&);
+    char enemyColor = (getWhiteToPlay()) ? 'b' : 'w';
+
+    for (std::vector<Square> rank : board) {
+        for (Square square : rank) {
+            if (square.getPiece() != nullptr && square.getPiece()->getID()[0] != enemyColor) {
+                std::vector<Move> pieceMoves = square.getPiece()->getValidMoves(this);
+                moves.insert(moves.end(), pieceMoves.begin(), pieceMoves.end());
+            }
+        }
+    }
+    return moves;
+}
+
 
 /*
 This method is from the Queen class and is here as Board is forward declared in BasePiece
@@ -403,4 +437,35 @@ std::vector<Move> Pawn::getValidMoves(Board* board) {
 
 
     return moves;
+}
+
+
+std::ostream& operator<<(std::ostream& os, const Move& move) {
+    Move m(move);
+    char piece = move.pieceMoved->getID()[1];
+    int rank = std::get<0>(m.end);
+    int file = std::get<1>(m.end);
+    std::string endingSquare = m.getRankFile(rank, file);
+
+    // Pawn moves are denoted by the file and rank, not piece type
+    if (piece == 'p') {
+        // Pawn push
+        if (std::get<1>(m.start) - std::get<1>(m.end) == 0) {
+            os << m.getRankFile(rank, file);
+        }
+        else {
+            os << m.getRankFile(std::get<0>(m.start), std::get<1>(m.start))[0] << 'x' << m.getRankFile(rank, file);
+        }
+    }
+    else {
+        // No Capture
+        if (m.pieceCaptured == nullptr) {
+            os << piece << m.getRankFile(rank, file);
+        }
+        else {
+            os << piece << 'x' << m.getRankFile(rank, file);
+        }
+    }
+    return os;
+
 }

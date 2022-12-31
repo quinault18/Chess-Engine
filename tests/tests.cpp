@@ -27,6 +27,15 @@ TEST(SquareTest, getBasePiece) {
     EXPECT_EQ(s.getPiece(), &bp);
 }
 
+TEST(SquareTest, testEquality) {
+    BasePiece bp("wQ");
+    Square s(0, 0, &bp);
+    Square s2 = s;
+    Square s3(s);
+    EXPECT_TRUE(s2 == s);
+    EXPECT_TRUE(s3 == s);
+}
+
 TEST(BasePieceTests, init) {
     BasePiece bp("wp");
     EXPECT_EQ(bp.getID(), "wp");
@@ -59,9 +68,13 @@ TEST(MoveTests, testPieceMoved) {
 
     start = std::make_tuple(7, 4);
     end = std::make_tuple(0, 0);
-    Move m(start, end, board.getSquare(start).getPiece(), nullptr);
+    Move m(start, end, board.getSquare(start).getPiece(), board.getSquare(end).getPiece());
 
     EXPECT_EQ(m.pieceMoved->getID(), "wK");
+    start = std::make_tuple(6, 0);
+    end = std::make_tuple(4, 0);
+    Move mv(start, end, board.getSquare(start).getPiece(), board.getSquare(end).getPiece());
+    std::cout << mv << std::endl;
 }
 
 
@@ -94,13 +107,8 @@ TEST(BoardTests, testPieceLocations) {
 
 TEST(BoardTests, testClearBoard) {
     Board b("rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1");
-    b.print();
-
     b.clearBoard();
-    b.print();
-
     b.loadFromFEN("r2qkb1r/pp1nnpp1/2p1p2p/3pPb2/3P4/5N2/PPPNBPPP/R1BQ1RK1 b kq - 0 8");
-    b.print();
 }
 
 TEST(BoardTests, testCopyConstructor) {
@@ -110,13 +118,18 @@ TEST(BoardTests, testCopyConstructor) {
     EXPECT_EQ(b.getWhiteToPlay(), copy.getWhiteToPlay());
 }
 
-TEST(BoardTests, testAssignmentOperator) {
-    Board b("r2qkb1r/pp1nnpp1/2p1p2p/3pPb2/3P4/5N2/PPPNBPPP/R1BQ1RK1 b kq - 0 8");
-    Board b1 = b;
-    b1.print();
+TEST(BoardTests, testEquality) {
+    Board b("rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1");
+    Board b2 = b;
+    Board b3(b);
+    EXPECT_TRUE(b2 == b);
+    EXPECT_TRUE(b3 == b);
 
+    Board b4("r4rk1/1pqnbpp1/2p1pn1p/p6P/2PP4/3Q1NN1/PP1B1PP1/1K1RR3 w - - 0 18");
+    Board b5(b4);
+    EXPECT_TRUE(b != b4);
+    EXPECT_TRUE(b5 == b4);
 }
-
 
 TEST(PieceTestsQueen, testGetValidMoves) {
     Board b("rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1");
@@ -265,4 +278,30 @@ TEST(PieceTestsPawn, testGetValidMoves) {
 
     EXPECT_EQ(movesC2.size(), 2);
     
+}
+
+TEST(MoveGenerationTests, testMoveGeneration) {
+    Board b("rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1");
+    std::vector<Move> moves = b.generateMoves();
+
+    EXPECT_EQ(moves.size(), 20);
+
+    b.makeMove(moves[0]);
+
+    moves = b.generateMoves();
+
+    EXPECT_FALSE(b.getWhiteToPlay());
+    EXPECT_EQ(moves.size(), 20);
+
+    Board b1("rnbqkbnr/p3pppp/2p5/1p1p4/3PP3/2N5/PPP2PPP/R1BQKBNR w KQkq - 0 4");
+    moves = b1.generateMoves();
+
+    for (Move move : moves) 
+        std::cout << move << std::endl;
+    std::cout << std::endl;
+    b1.makeMove(moves[0]);
+    moves = b1.generateMoves();
+    for (Move move : moves)
+        std::cout << move << std::endl;
+
 }

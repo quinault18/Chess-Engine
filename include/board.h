@@ -28,15 +28,21 @@ public:
     // Default constructor - loads 8x8 board of empty squares
     Board();
 
-
     // If a FEN string is passed, load the board with the passed string
     Board(std::string fen);
 
+    /*
+    Rule of Three implementation
+    */
     ~Board();
-
     Board(const Board& other);
-
     Board& operator=(Board otherr);
+
+    /*
+    Equality operator overloading
+    */
+    friend bool operator==(const Board& lhs, const Board& rhs);
+    friend bool operator!=(const Board& lhs, const Board& rhs);
 
     // Loads the board from a FEN string
     void loadFromFEN(std::string fen);
@@ -59,6 +65,12 @@ public:
 
     // Getter for whiteToPlay
     bool getWhiteToPlay();
+
+    /*
+    Generates all possible moves on the board for the color to play.
+    Does not yet account for checks, pins, etc. 
+    */
+    std::vector<Move> generateMoves();
 
 
 
