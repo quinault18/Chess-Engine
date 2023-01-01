@@ -5,6 +5,11 @@
 
 class King : public BasePiece {
 
+    private:
+        std::vector<Move> getCastlingMoves(Board* board);
+        std::vector<Move> getKingSideCastlingMoves(Board* board);
+        std::vector<Move> getQueenSideCastlingMoves(Board* board);
+
     public:
 
         /*

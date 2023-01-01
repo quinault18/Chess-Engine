@@ -362,6 +362,19 @@ TEST(CastlingRightsTest, testToString) {
     EXPECT_FALSE(cr7.whiteQueenSide);
     EXPECT_FALSE(cr7.blackKingSide);
     EXPECT_FALSE(cr7.blackQueenSide);
+}
 
+TEST(MoveGenerationTests, testCastling) {
+    Board b("r1bqkb1r/pppp1ppp/2n2n2/4p3/2B1P3/5N2/PPPP1PPP/RNBQK2R w KQkq - 4 4");
+    std::vector<Move> moves = b.generateMoves();
 
+    for (Move move : moves) {
+        std::cout << move << std::endl;
+    }
+
+    Board b1("r2qk2r/1ppb1ppp/p1np1n2/2b1p1B1/2B1P3/2NP1N2/PPPQ1PPP/R3K2R w KQkq - 0 8");
+    moves = b1.generateMoves();
+    for (Move move : moves) {
+        std::cout << move << std::endl;
+    }
 }

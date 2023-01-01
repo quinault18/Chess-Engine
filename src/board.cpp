@@ -222,6 +222,32 @@ void Board::makeMove(Move move) {
     // Set start square piece to empty
     getSquare(move.start).setPiece(nullptr);
     whiteToPlay = !whiteToPlay;
+
+    // Castling
+    if (move.isCastleMove) {
+
+        // Kingside castle
+        if (std::get<1>(move.end) > std::get<1>(move.start)) {
+            if (std::get<0>(move.start) == 0) {
+                board[0][5].setPiece(board[0][7].getPiece());
+                board[0][7].setPiece(nullptr);
+            }
+            else {
+                board[7][5].setPiece(board[7][7].getPiece());
+                board[7][7].setPiece(nullptr);
+            }
+        }
+        else {
+            if (std::get<0>(move.start) == 0) {
+                board[0][3].setPiece(board[0][0].getPiece());
+                board[0][0].setPiece(nullptr);
+            }
+            else {
+                board[7][3].setPiece(board[7][0].getPiece());
+                board[7][0].setPiece(nullptr);
+            }
+        }
+    }
 }
 
 bool Board::getWhiteToPlay() {
@@ -337,8 +363,68 @@ std::vector<Move> King::getValidMoves(Board* board) {
             }
         }  
     }
+    std::vector<Move> castlingMoves = getCastlingMoves(board);
+
+    moves.insert(moves.end(), castlingMoves.begin(), castlingMoves.end());
     return moves;
 }
+
+std::vector<Move> King::getCastlingMoves(Board* board) {
+    std::vector<Move> castlingMoves;
+
+    if (board->getWhiteToPlay()) {
+        if (board->getCastlingRights().whiteKingSide) {
+            std::vector<Move> kingSideCastle = getKingSideCastlingMoves(board);
+            castlingMoves.insert(castlingMoves.end(), kingSideCastle.begin(), kingSideCastle.end());
+        }
+        if (board->getCastlingRights().whiteQueenSide) {
+            std::vector<Move> queenSideCastle = getQueenSideCastlingMoves(board);
+            castlingMoves.insert(castlingMoves.end(), queenSideCastle.begin(), queenSideCastle.end());
+        }
+    }
+
+    else {
+        if (board->getCastlingRights().blackKingSide) {
+            std::vector<Move> kingSideCastle = getKingSideCastlingMoves(board);
+            castlingMoves.insert(castlingMoves.end(), kingSideCastle.begin(), kingSideCastle.end());
+        }
+        if (board->getCastlingRights().blackQueenSide) {
+            std::vector<Move> queenSideCastle = getQueenSideCastlingMoves(board);
+            castlingMoves.insert(castlingMoves.end(), queenSideCastle.begin(), queenSideCastle.end());
+        }
+    }
+
+    return castlingMoves;
+}
+
+std::vector<Move> King::getKingSideCastlingMoves(Board* board) {
+    std::vector<Move> kingSideCastleMoves;
+    int kingRank = std::get<0>(position);
+    int kingFile = std::get<1>(position);
+
+    if (board[0][kingRank][kingFile + 1].getPiece() == nullptr && board[0][kingRank][kingFile + 2].getPiece() == nullptr) {
+        std::tuple<int, int> kingEndSquare = std::make_tuple(kingRank, kingFile + 2);
+        Move kingSideCastleMove(position, kingEndSquare, this, board[0].getSquare(kingEndSquare).getPiece(), true);
+        kingSideCastleMoves.push_back(kingSideCastleMove);
+    }
+
+    return kingSideCastleMoves;
+}
+
+std::vector<Move> King::getQueenSideCastlingMoves(Board* board) {
+    std::vector<Move> queenSideCastleMoves;
+    int kingRank = std::get<0>(position);
+    int kingFile = std::get<1>(position);
+
+    if (board[0][kingRank][kingFile - 1].getPiece() == nullptr && board[0][kingRank][kingFile - 2].getPiece() == nullptr && board[0][kingRank][kingFile - 3].getPiece() == nullptr) {
+        std::tuple<int, int> kingEndSquare = std::make_tuple(kingRank, kingFile - 2);
+        Move queenSideCastleMove(position, kingEndSquare, this, board[0].getSquare(kingEndSquare).getPiece(), true);
+        queenSideCastleMoves.push_back(queenSideCastleMove);
+    }
+
+    return queenSideCastleMoves;
+}
+
 
 /*
 This method is from the Rook class and is here as Board is forward declared in BasePiece
@@ -527,6 +613,15 @@ std::ostream& operator<<(std::ostream& os, const Move& move) {
         }
     }
     else {
+        if (m.isCastleMove) {
+            if (std::get<1>(m.start) > file) {
+                os << "O-O";
+            }
+            else {
+                os << "O-O-O";
+            }
+            return os;
+        }
         // No Capture
         if (m.pieceCaptured == nullptr) {
             os << piece << m.getRankFile(rank, file);

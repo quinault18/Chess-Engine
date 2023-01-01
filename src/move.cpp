@@ -1,8 +1,8 @@
 #include "move.h"
 
-Move::Move(std::tuple<int, int> start, std::tuple<int, int> end, BasePiece* pieceMoved, BasePiece* pieceCaptured = nullptr) :
-    start(start), end(end), pieceMoved(pieceMoved), pieceCaptured(pieceCaptured) {
-    
+Move::Move(std::tuple<int, int> start, std::tuple<int, int> end, BasePiece* pieceMoved, BasePiece* pieceCaptured, bool isCastle) :
+    start(start), end(end), pieceMoved(pieceMoved), pieceCaptured(pieceCaptured), isCastleMove(isCastle) {
+
     id = generateMoveID(start, end);
 
     // Populate rowsToRanks
@@ -27,6 +27,7 @@ Move::Move(const Move& other) {
     end = other.end;
     rowsToRanks = other.rowsToRanks;
     colsToFiles = other.colsToFiles;
+    isCastleMove = other.isCastleMove;
 }
 
 Move& Move::operator=(Move other) {
@@ -37,6 +38,7 @@ Move& Move::operator=(Move other) {
     std::swap(end, other.end);
     std::swap(rowsToRanks, other.rowsToRanks);
     std::swap(colsToFiles, other.colsToFiles);
+    std::swap(isCastleMove, other.isCastleMove);
 
     return *this;
 }

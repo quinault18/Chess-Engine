@@ -15,6 +15,8 @@ class Move {
     private:
         int id;
 
+        
+
         /*
         Move id is used to generate a unique identifier for each move.
         The move id is in the format as follows:
@@ -29,8 +31,8 @@ class Move {
         /* A move on the chessboard has a starting and ending position, and a piece that moved.
          If the piece that moved captured another piece, that is stored in the pieceCaptured variable
         */
-        Move(std::tuple<int, int> start, std::tuple<int, int> end, BasePiece* pieceMoved, BasePiece* pieceCaptured);
-
+        Move(std::tuple<int, int> start, std::tuple<int, int> end, BasePiece* pieceMoved, BasePiece* pieceCaptured = nullptr, bool isCastle = false);
+       
         /*
         Rule of Three implementation
         */
@@ -51,6 +53,9 @@ class Move {
         // Starting and ending positions of the piece moved on the chessboard
         std::tuple<int, int> start;
         std::tuple<int, int> end;
+
+        // Castling and en passant rights
+        bool isCastleMove;
         
         // Maps for generating algebraic chess notation
         std::map<int, int> rowsToRanks;
