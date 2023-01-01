@@ -277,6 +277,7 @@ void Board::makeMove(Move move) {
     }
 }
 
+
 bool Board::getWhiteToPlay() {
     return whiteToPlay;
 }
