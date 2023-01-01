@@ -1,7 +1,7 @@
 #ifndef BOARD_H
 #define BOARD_H
 
-
+#include "castlingRights.h"
 #include "square.h"
 #include <iostream>
 #include <vector>
@@ -17,7 +17,7 @@ private:
     bool whiteToPlay;
 
     // Castling rights
-    std::string castlingRights;
+    CastlingRights castlingRights;
 
     // En Passant targets
     std::string enPassantTargets;
@@ -52,9 +52,11 @@ public:
     /*
     Equality operator overloading
     */
-    friend bool operator==(const Board& lhs, const Board& rhs);
-    friend bool operator!=(const Board& lhs, const Board& rhs);
-
+    //friend bool operator==(const Board& lhs, const Board& rhs);
+    //friend bool operator!=(const Board& lhs, const Board& rhs);
+    bool operator==(const Board& other);
+    bool operator!=(const Board& other);
+    
     // Loads the board from a FEN string
     void loadFromFEN(std::string fen);
 
@@ -81,7 +83,7 @@ public:
     bool getWhiteToPlay();
     int getHalfMove();
     int getMoveNumber();
-    std::string getCastlingRights();
+    CastlingRights getCastlingRights();
     std::string getEnPassantTargets();
 
     /*
