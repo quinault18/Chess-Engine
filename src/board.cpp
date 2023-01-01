@@ -190,12 +190,12 @@ std::vector<Square>& Board::operator[](int idx) {
     return board[idx];
 }
 
-bool Board::operator==(const Board& other) {
+bool Board::operator==(const Board& other){
     Board o = other;
     return toFEN() == o.toFEN();
 }
 
-bool Board::operator!=(const Board& other) {
+bool Board::operator!=(const Board& other){
     return !(*this == other);
 }
 
@@ -221,30 +221,57 @@ void Board::makeMove(Move move) {
     move.pieceMoved->setPosition(move.end);
     // Set start square piece to empty
     getSquare(move.start).setPiece(nullptr);
+
+    // increment move number when black makes a move
+    if (!whiteToPlay) {
+        moveNumber++;
+    }
+
+    // Change active color
     whiteToPlay = !whiteToPlay;
 
+    // Half move count
+    if (move.pieceMoved->getID()[0] != 'p' || move.pieceCaptured == nullptr) {
+        halfMove++;
+    }
+    else {
+        halfMove = 0;
+    }
+    
     // Castling
     if (move.isCastleMove) {
 
         // Kingside castle
         if (std::get<1>(move.end) > std::get<1>(move.start)) {
+            // Black
             if (std::get<0>(move.start) == 0) {
                 board[0][5].setPiece(board[0][7].getPiece());
                 board[0][7].setPiece(nullptr);
+                castlingRights.blackKingSide = false;
+                castlingRights.blackQueenSide = false;
             }
+            // White
             else {
                 board[7][5].setPiece(board[7][7].getPiece());
                 board[7][7].setPiece(nullptr);
+                castlingRights.whiteKingSide = false;
+                castlingRights.whiteQueenSide = false;
             }
         }
         else {
+            // Black
             if (std::get<0>(move.start) == 0) {
                 board[0][3].setPiece(board[0][0].getPiece());
                 board[0][0].setPiece(nullptr);
+                castlingRights.blackKingSide = false;
+                castlingRights.blackQueenSide = false;
             }
+            // White
             else {
                 board[7][3].setPiece(board[7][0].getPiece());
                 board[7][0].setPiece(nullptr);
+                castlingRights.whiteKingSide = false;
+                castlingRights.whiteQueenSide = false;
             }
         }
     }

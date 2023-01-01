@@ -47,13 +47,11 @@ public:
     */
     ~Board();
     Board(const Board& other);
-    Board& operator=(Board otherr);
+    Board& operator=(Board other);
 
     /*
     Equality operator overloading
     */
-    //friend bool operator==(const Board& lhs, const Board& rhs);
-    //friend bool operator!=(const Board& lhs, const Board& rhs);
     bool operator==(const Board& other);
     bool operator!=(const Board& other);
     
@@ -75,8 +73,12 @@ public:
     // Overloading access operator [] for integer indexing
     std::vector<Square>& operator[](int idx);
 
+    // Access a square via a tuple rather than the access operator[] 
     Square& getSquare(std::tuple<int, int> loc);
 
+    /*
+    Method to make a move on the board.
+    */
     void makeMove(Move move);
 
     // Getters for gameplay

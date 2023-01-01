@@ -364,17 +364,70 @@ TEST(CastlingRightsTest, testToString) {
     EXPECT_FALSE(cr7.blackQueenSide);
 }
 
-TEST(MoveGenerationTests, testCastling) {
-    Board b("r1bqkb1r/pppp1ppp/2n2n2/4p3/2B1P3/5N2/PPPP1PPP/RNBQK2R w KQkq - 4 4");
-    std::vector<Move> moves = b.generateMoves();
+TEST(CastlingTests, whiteKingSide) {
+    Board board("r1bqkb1r/pppp1ppp/2n2n2/4p3/2B1P3/5N2/PPPP1PPP/RNBQK2R w KQkq - 4 4");
+    Board check("r1bqkb1r/pppp1ppp/2n2n2/4p3/2B1P3/5N2/PPPP1PPP/RNBQ1RK1 b kq - 5 4");
+    std::vector<Move> moves = board.generateMoves();
 
     for (Move move : moves) {
-        std::cout << move << std::endl;
+        if (move.isCastleMove) {
+            board.makeMove(move);
+            break;
+        }
     }
-
-    Board b1("r2qk2r/1ppb1ppp/p1np1n2/2b1p1B1/2B1P3/2NP1N2/PPPQ1PPP/R3K2R w KQkq - 0 8");
-    moves = b1.generateMoves();
-    for (Move move : moves) {
-        std::cout << move << std::endl;
-    }
+    EXPECT_TRUE(board == check);   
+    EXPECT_FALSE(board.getCastlingRights().whiteKingSide);
+    EXPECT_FALSE(board.getCastlingRights().whiteQueenSide);
 }
+
+TEST(CastlingTests, whiteQueenSide) {
+    Board board("rnbqkb1r/1ppppppp/p4n2/6B1/3P4/2N5/PPPQPPPP/R3KBNR w KQq - 5 5");
+    Board check("rnbqkb1r/1ppppppp/p4n2/6B1/3P4/2N5/PPPQPPPP/2KR1BNR b q - 6 5");
+    std::vector<Move> moves = board.generateMoves();
+    
+    for (Move move : moves) {
+        if (move.isCastleMove) {
+            board.makeMove(move);
+            break;
+        }
+    }
+
+    EXPECT_TRUE(board == check);
+    EXPECT_FALSE(board.getCastlingRights().whiteKingSide);
+    EXPECT_FALSE(board.getCastlingRights().whiteQueenSide);
+}
+
+TEST(CastlingTests, blackKingSide) {
+    Board board("3rk2r/ppqnbpp1/2p1pn1p/7P/2PP4/5NN1/PP1BQPP1/1K1R3R b k - 6 17");
+    Board check("3r1rk1/ppqnbpp1/2p1pn1p/7P/2PP4/5NN1/PP1BQPP1/1K1R3R w - - 7 18");
+    std::vector<Move> moves = board.generateMoves();
+    
+    for (Move move : moves) {
+        if (move.isCastleMove) {
+            board.makeMove(move);
+            break;
+        }
+    }
+
+    EXPECT_TRUE(board == check);
+    EXPECT_FALSE(board.getCastlingRights().blackKingSide);
+    EXPECT_FALSE(board.getCastlingRights().blackQueenSide);
+}
+
+TEST(CastlingTests, blackQueenSide) {
+    Board board("r3kr2/ppqnbpp1/2p1pn1p/7P/2PP4/P2Q1NN1/1P1B1PP1/1K1R3R b q - 0 17");
+    Board check("2kr1r2/ppqnbpp1/2p1pn1p/7P/2PP4/P2Q1NN1/1P1B1PP1/1K1R3R w - - 1 18");
+    std::vector<Move> moves = board.generateMoves();
+    
+    for (Move move : moves) {
+        if (move.isCastleMove) {
+            board.makeMove(move);
+            break;
+        }
+    }
+
+    EXPECT_TRUE(board == check);
+    EXPECT_FALSE(board.getCastlingRights().blackKingSide);
+    EXPECT_FALSE(board.getCastlingRights().blackQueenSide);
+}
+

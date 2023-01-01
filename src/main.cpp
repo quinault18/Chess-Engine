@@ -18,5 +18,6 @@ int main() {
     }
 
     board.print();
+    std::cout << board.toFEN() << std::endl;
     return 0;
 }
