@@ -4,6 +4,7 @@
 #include "basepiece.h"
 #include "board.h"
 #include "move.h"
+#include "castlingRights.h"
 
 
 TEST(SquareTest, getLocation) {
@@ -129,6 +130,15 @@ TEST(BoardTests, testEquality) {
     Board b5(b4);
     EXPECT_TRUE(b != b4);
     EXPECT_TRUE(b5 == b4);
+}
+
+TEST(BoardTests, equalityTesting) {
+    Board b("r1bq1rk1/pppp1ppp/2n1pn2/2b5/2B1P3/P4N2/1PPP1PPP/RNBQ1RK1 w - - 1 6");
+    Board b2("r1bq1rk1/pppp1ppp/2n1pn2/2b5/2B1P3/P4N2/1PPP1PPP/RNBQ1RK1 w - - 1 6");
+    Board b3("r1bq1rk1/pppp1ppp/2n1pn2/2b5/2B1P3/P4N2/1PPP1PPP/RNBQ1RK1 w - - 1 8");
+    EXPECT_EQ(b.toFEN(), b2.toFEN());
+    EXPECT_TRUE(b == b2);
+    EXPECT_TRUE(b2 != b3);
 }
 
 TEST(PieceTestsQueen, testGetValidMoves) {
@@ -277,7 +287,6 @@ TEST(PieceTestsPawn, testGetValidMoves) {
     movesC2 = b3[6][2].getPiece()->getValidMoves(&b3);
 
     EXPECT_EQ(movesC2.size(), 2);
-    
 }
 
 TEST(MoveGenerationTests, testMoveGeneration) {
@@ -321,4 +330,38 @@ TEST(BoardTests, fenGeneration) {
     Board board("r4rk1/1pqnbpp1/2p1pn1p/p6P/2PP4/3Q1NN1/PP1B1PP1/1K1RR3 w - - 0 1");
     fen = "r4rk1/1pqnbpp1/2p1pn1p/p6P/2PP4/3Q1NN1/PP1B1PP1/1K1RR3 w KQkq - - 0 1";
   
+}
+
+TEST(CastlingRightsTest, testToString) {
+    CastlingRights cr(true, true, true, true);
+    EXPECT_EQ(cr.toString(), "KQkq");
+
+    CastlingRights cr1(false, true, true, true);
+    EXPECT_EQ(cr1.toString(), "Qkq");
+
+    CastlingRights cr2(false, false, true, true);
+    EXPECT_EQ(cr2.toString(), "kq");
+
+    CastlingRights cr3(false, false, false, true);
+    EXPECT_EQ(cr3.toString(), "q");
+
+    CastlingRights cr4(false, false, false, false);
+    EXPECT_EQ(cr4.toString(), "-");
+
+    CastlingRights cr5("KQkq");
+    EXPECT_TRUE(cr5.whiteKingSide);
+
+    CastlingRights cr6("Qkq");
+    EXPECT_FALSE(cr6.whiteKingSide);
+    EXPECT_TRUE(cr6.whiteQueenSide);
+    EXPECT_TRUE(cr6.blackQueenSide);
+    EXPECT_TRUE(cr6.blackKingSide);
+
+    CastlingRights cr7("-");
+    EXPECT_FALSE(cr7.whiteKingSide);
+    EXPECT_FALSE(cr7.whiteQueenSide);
+    EXPECT_FALSE(cr7.blackKingSide);
+    EXPECT_FALSE(cr7.blackQueenSide);
+
+
 }

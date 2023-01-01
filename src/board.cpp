@@ -33,11 +33,19 @@ Board::~Board() {}
 Board::Board(const Board& other) {
     board = other.board;
     whiteToPlay = other.whiteToPlay;
+    castlingRights = other.castlingRights;
+    enPassantTargets = other.enPassantTargets;
+    halfMove = other.halfMove;
+    moveNumber = other.moveNumber;
 }
 
 Board& Board::operator=(Board other) {
     std::swap(board, other.board);
     std::swap(whiteToPlay, other.whiteToPlay);
+    std::swap(castlingRights, other.castlingRights);
+    std::swap(enPassantTargets, other.enPassantTargets);
+    std::swap(halfMove, other.halfMove);
+    std::swap(moveNumber, other.moveNumber);
 
     return *this;
 }
@@ -51,7 +59,8 @@ void Board::loadFromFEN(std::string fen) {
     whiteToPlay = (parsedFEN[1] == "w") ? true : false;
 
     // Castling rights, en passant targets, and move count
-    castlingRights = parsedFEN[2];
+    CastlingRights cr(parsedFEN[2]);
+    castlingRights = cr;
     enPassantTargets = parsedFEN[3];
     halfMove = std::stoi(parsedFEN[4]);
     moveNumber = std::stoi(parsedFEN[5]);
@@ -135,8 +144,11 @@ std::string Board::toFEN() {
         }
     }
 
-    fen += (getWhiteToPlay()) ? " w" : " b";
-    fen += " KQkq - 0 1";
+    fen += (getWhiteToPlay()) ? " w " : " b ";
+    fen += castlingRights.toString();
+    fen += " - ";
+    fen += std::to_string(halfMove);
+    fen += " " + std::to_string(moveNumber);
 
     return fen;
 }
@@ -178,21 +190,13 @@ std::vector<Square>& Board::operator[](int idx) {
     return board[idx];
 }
 
-bool operator==(const Board& lhs, const Board& rhs) {
-
-    for (int i = 0; i < lhs.board.size(); i++) {
-        for (int j = 0; j < lhs.board[i].size(); j++) {
-            if (lhs.board[i][j] != rhs.board[i][j]) {
-                return false;
-            }
-        }
-    }
-
-    return true;
+bool Board::operator==(const Board& other) {
+    Board o = other;
+    return toFEN() == o.toFEN();
 }
 
-bool operator!=(const Board& lhs, const Board& rhs) {
-    return !(lhs == rhs);
+bool Board::operator!=(const Board& other) {
+    return !(*this == other);
 }
 
 void Board::print() {
@@ -232,7 +236,7 @@ int Board::getMoveNumber() {
     return moveNumber;
 }
 
-std::string Board::getCastlingRights() {
+CastlingRights Board::getCastlingRights() {
     return castlingRights;
 }
 

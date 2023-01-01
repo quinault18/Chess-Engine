@@ -24,7 +24,8 @@ add_executable(tests
                 ../src/rook.cpp
                 ../src/pawn.cpp
                 ../src/knight.cpp
-                ../src/bishop.cpp)
+                ../src/bishop.cpp
+                ../src/castlingRights.cpp)
 
 target_link_libraries(tests GTest::gtest_main)
 add_test(NAME tests COMMAND tests)
