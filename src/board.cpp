@@ -107,6 +107,12 @@ void Board::loadFromFEN(std::string fen) {
                 // Adding piece to board and moving to the next file in this rank
                 std::tuple<int, int> position = std::make_tuple(rank, file);
                 board[rank][file].setPieceAtStart(new BasePiece(std::string(1, color) + id, position));
+                if (board[rank][file].getPiece()->getID() == "wK") {
+                    whiteKingLocation = board[rank][file].getPiece()->getPosition();
+                }
+                if (board[rank][file].getPiece()->getID() == "bK") {
+                    blackKingLocation = board[rank][file].getPiece()->getPosition();
+                }
                 file++;
             }
         }
@@ -275,8 +281,151 @@ void Board::makeMove(Move move) {
             }
         }
     }
+
+    // Updating king locations
+    if (move.pieceMoved->getID() == "wK") {
+        whiteKingLocation = move.end;
+    }
+    else if (move.pieceMoved->getID() == "bK") {
+        blackKingLocation = move.end;
+    }
 }
 
+std::tuple<bool, std::vector<Pin>, std::vector<Check> > Board::getPinsAndChecks() {
+    // Initialize vectors for pins, checks, and boolean value for inCheck
+    bool inCheck = false;
+    std::vector<Pin> pins;
+    std::vector<Check> checks;
+
+    char enemyColor = (whiteToPlay) ? 'b' : 'w';
+    char allyColor = (whiteToPlay) ? 'w' : 'b';
+
+    int startRow = (whiteToPlay) ? std::get<0>(whiteKingLocation) : std::get<0>(blackKingLocation);
+    int startCol = (whiteToPlay) ? std::get<1>(whiteKingLocation) : std::get<1>(blackKingLocation);
+
+    // Directions of possible pins and checks, excluding knights
+    std::vector<std::tuple<int, int> > directions;
+    // diretions for queens & bishops
+    directions.push_back(std::make_tuple(1, 1));
+    directions.push_back(std::make_tuple(1, -1));
+    directions.push_back(std::make_tuple(-1, 1));
+    directions.push_back(std::make_tuple(-1, -1));
+    // directions for queens & rooks
+    directions.push_back(std::make_tuple(1, 0));
+    directions.push_back(std::make_tuple(0, 1));
+    directions.push_back(std::make_tuple(-1, 0));
+    directions.push_back(std::make_tuple(0, -1));
+
+    for (int j = 0; j < directions.size(); j++) {
+        std::tuple<int, int> dir = directions[j];
+        std::vector<int> possiblePin;
+        Pin pin(-1, -1, -1, -1);
+        for (int i = 1; i < 8; i++) {
+            int endRow = startRow + std::get<0>(dir) * i;
+            int endCol = startCol + std::get<1>(dir) * i;
+            // Bounds checking
+            if (0 <= endRow && endRow <= 7 && 0 <= endCol && endCol <= 7) {
+                BasePiece* endPiece = board[endRow][endCol].getPiece();
+                if (endPiece == nullptr) {
+                    continue;
+                }
+                else if (endPiece->getID()[0] == allyColor && endPiece->getID() != "K") {
+                    if (possiblePin.size() == 0) {
+                        pin = Pin(endRow, endCol, std::get<0>(dir), std::get<1>(dir));
+                    }
+                    else {
+                        break;
+                    }
+                }
+                else if (endPiece->getID()[0] == enemyColor) {
+                    char enemyType = endPiece->getID()[1];
+                    if ((0 <= j && j <= 3 && enemyType == 'B') || 
+                    (i == 1 && enemyType == 'p' && (enemyColor == 'w' && 0 <= i && i <= 1) || (enemyColor == 'b' && 2 <= j && j <= 3)) || 
+                    (enemyType == 'Q') || (i == 1 && enemyType == 'K') ||
+                    (4 <= j && j <= 7 && enemyType == 'R')) {
+                        if (pin.endRow == -1) {
+                            inCheck = true;
+                            Check check(endRow, endCol, std::get<0>(dir), std::get<1>(dir));
+                            checks.push_back(check);
+                            break;
+                        }
+                        else {
+                            pins.push_back(pin);
+                            break;
+                        }
+                    }
+                    else {
+                        break;
+                    }
+                }
+            }
+            else {
+                break;
+            }
+        }
+    }
+
+    // Knights move in an 'L' pattern and do not follow same rules for algorithm above
+    // Knights also can not pin another piece
+    std::vector<std::tuple<int, int> > knightDirections;
+    knightDirections.push_back(std::make_tuple(2, 1));
+    knightDirections.push_back(std::make_tuple(1, 2));
+    knightDirections.push_back(std::make_tuple(-1, 2));
+    knightDirections.push_back(std::make_tuple(-2, 1));
+    knightDirections.push_back(std::make_tuple(-2, -1));
+    knightDirections.push_back(std::make_tuple(-1, -2));
+    knightDirections.push_back(std::make_tuple(1, -2));
+    knightDirections.push_back(std::make_tuple(2, -1));
+
+    for (std::tuple<int, int> move : knightDirections) {
+        int endRow = startRow + std::get<0>(move);
+        int endCol = startCol + std::get<1>(move);
+        
+        // Bounds checking
+        if (0 <= endRow && endRow <= 7 && 0 <= endCol && endCol <= 7) {
+            BasePiece* endPiece = board[endRow][endCol].getPiece();
+
+            if (endPiece == nullptr) {
+                continue;
+            }
+            if (endPiece->getID()[0] == enemyColor && endPiece->getID()[1] == 'N') {
+                inCheck = true;
+                checks.push_back(Check(endRow, endCol, std::get<0>(move), std::get<1>(move)));
+            }
+        }
+    }
+
+
+
+
+    std::tuple<bool, std::vector<Pin>, std::vector<Check> > pinsAndChecks = std::make_tuple(inCheck, pins, checks);
+    return pinsAndChecks;
+}
+
+bool Board::squareUnderAttack(Square& square) {
+    // Change turns and get opposing color moves
+    whiteToPlay = !whiteToPlay;
+    std::vector<Move> opponentMoves = getAttackingMoves();
+    whiteToPlay = !whiteToPlay;
+
+    // Loop through moves and see if a move ends on that square
+    for (Move move : opponentMoves) {
+        // Squares pawns land on are not "under attack" if they are not diagonal
+        if (move.pieceMoved->getID()[1] != 'p') {
+            if (move.end == square.getLocation()) {
+                return true;
+            }
+        }
+        else {
+            if (std::get<1>(move.start) != std::get<1>(move.end)) {
+                if (move.end == square.getLocation()) {
+                    return true;
+                }
+            }
+        }
+    }
+    return false;
+}
 
 bool Board::getWhiteToPlay() {
     return whiteToPlay;
@@ -304,7 +453,6 @@ Square& Board::getSquare(std::tuple<int, int> loc) {
 
 std::vector<Move> Board::generateMoves() {
     std::vector<Move> moves;
-    //Board boardCopy(this&);
     char enemyColor = (getWhiteToPlay()) ? 'b' : 'w';
 
     for (std::vector<Square> rank : board) {
@@ -315,6 +463,26 @@ std::vector<Move> Board::generateMoves() {
             }
         }
     }
+    return moves;
+}
+
+std::vector<Move> Board::getAttackingMoves() {
+    std::vector<Move> moves;
+    char enemyColor = (getWhiteToPlay()) ? 'b' : 'w';
+
+    for (std::vector<Square> rank : board) {
+        for (Square square : rank) {
+            if (square.getPiece() != nullptr && square.getPiece()->getID()[0] != enemyColor && square.getPiece()->getID()[1] == 'p') {
+                std::vector<Move> pieceMoves = square.getPiece()->getAttackingMoves(this);
+                moves.insert(moves.end(), pieceMoves.begin(), pieceMoves.end());
+            }
+            else if (square.getPiece() != nullptr && square.getPiece()->getID()[0] != enemyColor && square.getPiece()->getID()[1] != 'p') {
+                std::vector<Move> pieceMoves = square.getPiece()->getValidMoves(this);
+                moves.insert(moves.end(), pieceMoves.begin(), pieceMoves.end());
+            }
+        }
+    }
+
     return moves;
 }
 
@@ -360,6 +528,10 @@ std::vector<Move> Queen::getValidMoves(Board* board) {
     return moves;
 }
 
+std::vector<Move> Queen::getAttackingMoves(Board* board) {
+    return getValidMoves(board);
+}
+
 /*
 This method is from the King class and is here as Board is forward declared in BasePiece
 */
@@ -395,6 +567,10 @@ std::vector<Move> King::getValidMoves(Board* board) {
 
     moves.insert(moves.end(), castlingMoves.begin(), castlingMoves.end());
     return moves;
+}
+
+std::vector<Move> King::getAttackingMoves(Board* board) {
+    return getValidMoves(board);
 }
 
 std::vector<Move> King::getCastlingMoves(Board* board) {
@@ -494,6 +670,10 @@ std::vector<Move> Rook::getValidMoves(Board* board) {
     return moves;
 }
 
+std::vector<Move> Rook::getAttackingMoves(Board* board) {
+    return getValidMoves(board);
+}
+
 /*
 This method is from the Bishop class and is here as Board is forward declared in BasePiece
 */
@@ -535,6 +715,10 @@ std::vector<Move> Bishop::getValidMoves(Board* board) {
     return moves;
 }
 
+std::vector<Move> Bishop::getAttackingMoves(Board* board) {
+    return getValidMoves(board);
+}
+
 /*
 This method is from the Knight class and is here as Board is forward declared in BasePiece
 */
@@ -571,6 +755,9 @@ std::vector<Move> Knight::getValidMoves(Board* board) {
     return moves;
 }
 
+std::vector<Move> Knight::getAttackingMoves(Board* board) {
+    return getValidMoves(board);
+}
 
 std::vector<Move> Pawn::getValidMoves(Board* board) {
     std::vector<Move> moves;
@@ -617,8 +804,34 @@ std::vector<Move> Pawn::getValidMoves(Board* board) {
             }      
         }   
     }
+    return moves;
+}
 
+std::vector<Move> Pawn::getAttackingMoves(Board* board) {
+    std::vector<Move> moves;
 
+    // Pawns can only move up board if white and down board if black
+    int moveAmount = (board->getWhiteToPlay()) ? -1 : 1;
+    int startRow = (board->getWhiteToPlay()) ? 6 : 1;
+    char enemyColor = (board->getWhiteToPlay()) ? 'b' : 'w';
+
+    if (std::get<0>(position) + moveAmount <= 7 && std::get<0>(position) + moveAmount >= 0) {
+        // Pawns can only capture opposing pieces diagonally
+
+        // Capture to left
+        if (std::get<1>(position) - 1 >= 0) {
+            std::tuple<int, int> end = std::make_tuple(std::get<0>(position) + moveAmount, std::get<1>(position) - 1);
+            Move leftCapture(position, end, this, board[0][std::get<0>(position) + moveAmount][std::get<1>(position) - 1].getPiece());
+            moves.push_back(leftCapture);
+        }   
+
+        // Capture to right
+        if (std::get<1>(position) + 1 <= 7) {
+            std::tuple<int, int> end = std::make_tuple(std::get<0>(position) + moveAmount, std::get<1>(position) + 1);
+            Move rightCapture(position, end, this, board[0][std::get<0>(position) + moveAmount][std::get<1>(position) + 1].getPiece());
+            moves.push_back(rightCapture);     
+        }   
+    }
     return moves;
 }
 
@@ -659,5 +872,4 @@ std::ostream& operator<<(std::ostream& os, const Move& move) {
         }
     }
     return os;
-
 }

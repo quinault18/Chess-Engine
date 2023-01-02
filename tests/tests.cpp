@@ -141,6 +141,78 @@ TEST(BoardTests, equalityTesting) {
     EXPECT_TRUE(b2 != b3);
 }
 
+TEST(BoardTests, fenGeneration) {
+    Board b("rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1");
+    std::string fen = "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1";
+    EXPECT_EQ(b.toFEN(), fen);
+    EXPECT_EQ(b.getMoveNumber(), 1);
+
+    Board board("r4rk1/1pqnbpp1/2p1pn1p/p6P/2PP4/3Q1NN1/PP1B1PP1/1K1RR3 w - - 0 1");
+    fen = "r4rk1/1pqnbpp1/2p1pn1p/p6P/2PP4/3Q1NN1/PP1B1PP1/1K1RR3 w KQkq - - 0 1";
+  
+}
+
+TEST(BoardTests, testSquareUnderAttack) {
+    Board board("r1bqkbnr/pppp1ppp/2n5/1B2p3/4P3/5N2/PPPP1PPP/RNBQK2R b KQkq - 3 3");
+    EXPECT_TRUE(board.squareUnderAttack(board[2][2]));
+    EXPECT_TRUE(board.squareUnderAttack(board[4][0]));
+    EXPECT_TRUE(board.squareUnderAttack(board[3][3]));
+    EXPECT_TRUE(board.squareUnderAttack(board[3][5]));
+
+    EXPECT_FALSE(board.squareUnderAttack(board[4][1]));
+    EXPECT_FALSE(board.squareUnderAttack(board[4][6]));
+    // EXPECT_FALSE(board.squareUnderAttack(board[0][0]));
+
+}
+
+TEST(BoardTests, testPinsAndChecksStartingPosition) {
+    Board b("rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1");
+    std::tuple<bool, std::vector<Pin>, std::vector<Check> > pinsAndChecks = b.getPinsAndChecks();
+
+    EXPECT_FALSE(std::get<0>(pinsAndChecks));
+    EXPECT_EQ(std::get<1>(pinsAndChecks).size(), 0);
+    EXPECT_EQ(std::get<2>(pinsAndChecks).size(), 0);
+
+    Board board("rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR b KQkq - 0 1");
+    pinsAndChecks = board.getPinsAndChecks();
+
+    EXPECT_FALSE(std::get<0>(pinsAndChecks));
+    EXPECT_EQ(std::get<1>(pinsAndChecks).size(), 0);
+    EXPECT_EQ(std::get<2>(pinsAndChecks).size(), 0);
+}
+
+TEST(BoardTests, testPinsAndChecksOnePin) {
+    Board b("rnbqkbnr/ppppp1pp/5p2/7Q/4P3/8/PPPP1PPP/RNB1KBNR b KQkq - 1 2");
+    std::tuple<bool, std::vector<Pin>, std::vector<Check> > pinsAndChecks = b.getPinsAndChecks();
+    EXPECT_TRUE(std::get<0>(pinsAndChecks));
+    EXPECT_EQ(std::get<1>(pinsAndChecks).size(), 0);
+    EXPECT_EQ(std::get<2>(pinsAndChecks).size(), 1);
+}
+
+TEST(BoardTests, testPinsAndChecksTwoPins) {
+    Board b("1r2k1r1/pbppnp1p/1bn2P2/8/Q7/B1PB1q2/P4PPP/3RR1K1 w - - 0 20");
+    std::tuple<bool, std::vector<Pin>, std::vector<Check> > pinsAndChecks = b.getPinsAndChecks();
+    EXPECT_FALSE(std::get<0>(pinsAndChecks));
+    EXPECT_EQ(std::get<1>(pinsAndChecks).size(), 2);
+    EXPECT_EQ(std::get<2>(pinsAndChecks).size(), 0);
+}
+
+TEST(BoardTests, testPinsAndChecksTwoChecks) {
+    Board b("1r4r1/pbpknp1p/1b3P2/5B2/8/B1P2q2/P4PPP/3R2K1 b - - 1 22");
+    std::tuple<bool, std::vector<Pin>, std::vector<Check> > pinsAndChecks = b.getPinsAndChecks();
+    EXPECT_TRUE(std::get<0>(pinsAndChecks));
+    EXPECT_EQ(std::get<1>(pinsAndChecks).size(), 0);
+    EXPECT_EQ(std::get<2>(pinsAndChecks).size(), 2);
+}
+
+TEST(BoardTests, testPinsAndChecksKnight) {
+    Board b("r3r1k1/pp3pbp/2p1B1p1/1qB5/3P4/Q4Nn1/P4PPP/3R1K1R w - - 5 21");
+    std::tuple<bool, std::vector<Pin>, std::vector<Check> > pinsAndChecks = b.getPinsAndChecks();
+    EXPECT_TRUE(std::get<0>(pinsAndChecks));
+    EXPECT_EQ(std::get<1>(pinsAndChecks).size(), 0);
+    EXPECT_EQ(std::get<2>(pinsAndChecks).size(), 2);
+}
+
 TEST(PieceTestsQueen, testGetValidMoves) {
     Board b("rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1");
     std::vector<Move> moves = b[7][3].getPiece()->getValidMoves(&b);
@@ -289,6 +361,17 @@ TEST(PieceTestsPawn, testGetValidMoves) {
     EXPECT_EQ(movesC2.size(), 2);
 }
 
+TEST(PieceTestsPawn, testGetAttackingMoves) {
+    Board board("rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1");
+    std::vector<Move> moves = board[6][1].getPiece()->getAttackingMoves(&board);
+
+    EXPECT_EQ(moves.size(), 2);
+
+    moves = board[6][0].getPiece()->getAttackingMoves(&board);
+    EXPECT_EQ(moves.size(), 1);
+
+}
+
 TEST(MoveGenerationTests, testMoveGeneration) {
     Board b("rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1");
     std::vector<Move> moves = b.generateMoves();
@@ -321,16 +404,6 @@ TEST(MakeMoveTests, makeMove) {
     EXPECT_FALSE(b.getWhiteToPlay());
 }
 
-TEST(BoardTests, fenGeneration) {
-    Board b("rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1");
-    std::string fen = "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1";
-    EXPECT_EQ(b.toFEN(), fen);
-    EXPECT_EQ(b.getMoveNumber(), 1);
-
-    Board board("r4rk1/1pqnbpp1/2p1pn1p/p6P/2PP4/3Q1NN1/PP1B1PP1/1K1RR3 w - - 0 1");
-    fen = "r4rk1/1pqnbpp1/2p1pn1p/p6P/2PP4/3Q1NN1/PP1B1PP1/1K1RR3 w KQkq - - 0 1";
-  
-}
 
 TEST(CastlingRightsTest, testToString) {
     CastlingRights cr(true, true, true, true);
@@ -430,4 +503,3 @@ TEST(CastlingTests, blackQueenSide) {
     EXPECT_FALSE(board.getCastlingRights().blackKingSide);
     EXPECT_FALSE(board.getCastlingRights().blackQueenSide);
 }
-

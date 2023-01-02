@@ -6,6 +6,28 @@
 #include <iostream>
 #include <vector>
 
+
+struct Pin {
+    public:
+        int endRow;
+        int endCol;
+        int dirRow;
+        int dirCol;
+
+        Pin(int eRow, int eCol, int dRow, int dCol) : endRow(eRow), endCol(eCol), dirRow(dRow), dirCol(dCol) {}
+};
+
+struct Check {
+    public: 
+        int endRow;
+        int endCol;
+        int dirRow;
+        int dirCol;
+
+        Check(int eRow, int eCol, int dRow, int dCol) : endRow(eRow), endCol(eCol), dirRow(dRow), dirCol(dCol) {}
+};
+
+
 class Board {
 
 private:
@@ -31,6 +53,10 @@ private:
 
     // Helper method for initializing the board
     void initBoard();
+
+    // Values for white and black king location
+    std::tuple<int, int> whiteKingLocation;
+    std::tuple<int, int> blackKingLocation;
 
 
 
@@ -81,6 +107,11 @@ public:
     */
     void makeMove(Move move);
 
+   /*
+   Determine if square is under attack by enemy piece
+   */
+    bool squareUnderAttack(Square& square);
+
     // Getters for gameplay
     bool getWhiteToPlay();
     int getHalfMove();
@@ -89,13 +120,23 @@ public:
     std::string getEnPassantTargets();
 
     /*
-    Generates all possible moves on the board for the color to play.
+    Generates all attacking moves. For pawns, this includes diagonal attacking moves
+    that do not attack antything.
+    */
+    std::vector<Move> getAttackingMoves();
+    /*
+    Generates all valid moves on the board for the color to play.
     Does not yet account for checks, pins, etc. 
     */
     std::vector<Move> generateMoves();
 
-
+    /*
+    Gen pins and checks
+    */
+    std::tuple<bool, std::vector<Pin>, std::vector<Check> > getPinsAndChecks();
 
 };
+
+
 
 #endif

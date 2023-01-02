@@ -63,12 +63,12 @@ class BasePiece {
         Set the position of this piece
         */
        void setPosition(std::tuple<int, int> newPos);
-       
+
         /*
         Method for generating the valid moves a piece has. To be overriden by each child class.
         */
         virtual std::vector<Move> getValidMoves(Board* board);
-
+        virtual std::vector<Move> getAttackingMoves(Board* board);
     
 };
 

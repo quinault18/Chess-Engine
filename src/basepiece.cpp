@@ -26,6 +26,11 @@ std::vector<Move> BasePiece::getValidMoves(Board* board)  {
     return moves;
 }
 
+std::vector<Move> BasePiece::getAttackingMoves(Board* board)  {
+    std::vector<Move> moves;
+    return moves;
+}
+
 
 std::string BasePiece::getID() {
     return id;

@@ -28,6 +28,7 @@ class King : public BasePiece {
         This is implemented in board.cpp.
         */
         std::vector<Move> getValidMoves(Board* board) override;
+        std::vector<Move> getAttackingMoves(Board* board) override;
     
 };
 

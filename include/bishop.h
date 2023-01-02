@@ -25,6 +25,7 @@ class Bishop : public BasePiece {
         TODO - implement checks and pins
         */
         std::vector<Move> getValidMoves(Board* board) override;
+        std::vector<Move> getAttackingMoves(Board* board) override;
 
 };
 
