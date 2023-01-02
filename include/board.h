@@ -75,7 +75,7 @@ private:
 public:
 
     /**
-     * @brief Default constructor - loads 8x8 board of empty squares
+     * @brief Default constructor - loads 8x8 board with the standard starting position of the pieces
      * 
     */
     Board();
