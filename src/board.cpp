@@ -1,7 +1,7 @@
 #include "board.h"
 
 Board::Board() {
-
+    // Initializing squares
     initBoard();
 
     // This is the starting position of a standard game of chess
@@ -121,13 +121,19 @@ void Board::loadFromFEN(std::string fen) {
 
 std::string Board::toFEN() {
     std::string fen;
-
+    // Iterate over the ranks of the board
     for (int rank = 0; rank < board.size(); rank++) {
+
+        // Number of empty squares before another piece
         int emptyCount = 0;
+
+        // Iterate over the files of the rank
         for (int file = 0; file < board[rank].size(); file++) {
+            // Increment emptyCount if no piece at square
             if (board[rank][file].getPiece() == nullptr) {
                 emptyCount++;
             }
+            // Add piece type to string. White pieces use capital letters, black pieces use lowercase letters
             else {
                 if (emptyCount > 0) {
                     fen += std::to_string(emptyCount);       
@@ -145,11 +151,13 @@ std::string Board::toFEN() {
         if (emptyCount > 0) {
             fen += std::to_string(emptyCount);
         }
+        // Ranks are denoted with a '/'
         if (rank < 7) {
             fen += '/';
         }
     }
 
+    // Create the rest of the FEN string - active color, castling rights, en passant target, half move and move number
     fen += (getWhiteToPlay()) ? " w " : " b ";
     fen += castlingRights.toString();
     fen += " - ";
@@ -161,7 +169,6 @@ std::string Board::toFEN() {
 
 void Board::clearBoard() {
     for (int i = 0; i < 8; i++) {
-        
         for (int j = 0; j < 8; j++) {
             board[i][j] = Square(i, j, nullptr);
         }
@@ -316,19 +323,31 @@ std::tuple<bool, std::vector<Pin>, std::vector<Check> > Board::getPinsAndChecks(
     directions.push_back(std::make_tuple(-1, 0));
     directions.push_back(std::make_tuple(0, -1));
 
+    // Iterate over directions for bishops, rooks, queens, and pawns
     for (int j = 0; j < directions.size(); j++) {
+
         std::tuple<int, int> dir = directions[j];
         std::vector<int> possiblePin;
+
+        // Setup possible pin - can not be on squares (-1, -1) and is used for error checking
         Pin pin(-1, -1, -1, -1);
+
+        // Radiate outward from current king position
         for (int i = 1; i < 8; i++) {
+
+            // Square an attacking piece could be
             int endRow = startRow + std::get<0>(dir) * i;
             int endCol = startCol + std::get<1>(dir) * i;
+
             // Bounds checking
             if (0 <= endRow && endRow <= 7 && 0 <= endCol && endCol <= 7) {
                 BasePiece* endPiece = board[endRow][endCol].getPiece();
+
+                // If square is empty, move to next square in progression
                 if (endPiece == nullptr) {
                     continue;
                 }
+                // If endPiece is opposite color and not a King, create a pin on that square as this piece could be attacking king
                 else if (endPiece->getID()[0] == allyColor && endPiece->getID() != "K") {
                     if (possiblePin.size() == 0) {
                         pin = Pin(endRow, endCol, std::get<0>(dir), std::get<1>(dir));
@@ -337,18 +356,28 @@ std::tuple<bool, std::vector<Pin>, std::vector<Check> > Board::getPinsAndChecks(
                         break;
                     }
                 }
+                // If piece is opposite color, check if it is directly checking king or is pinning another piece
                 else if (endPiece->getID()[0] == enemyColor) {
                     char enemyType = endPiece->getID()[1];
+
+                    /*
+                    The directions vector is setup such that the first 4 elements are the directions bishops and queens can move in.
+                    The last 4 elements are the directions queens and rooks can move in. 
+                    This if statement checks the type of piece is compatible with the current direction.
+                    */
                     if ((0 <= j && j <= 3 && enemyType == 'B') || 
                     (i == 1 && enemyType == 'p' && (enemyColor == 'w' && 0 <= i && i <= 1) || (enemyColor == 'b' && 2 <= j && j <= 3)) || 
                     (enemyType == 'Q') || (i == 1 && enemyType == 'K') ||
                     (4 <= j && j <= 7 && enemyType == 'R')) {
+
+                        // If pin is not possible, that means endPiece is checking the king
                         if (pin.endRow == -1) {
                             inCheck = true;
                             Check check(endRow, endCol, std::get<0>(dir), std::get<1>(dir));
                             checks.push_back(check);
                             break;
                         }
+                        // If the pin has been assigned a real value, there is a pin
                         else {
                             pins.push_back(pin);
                             break;
@@ -384,10 +413,11 @@ std::tuple<bool, std::vector<Pin>, std::vector<Check> > Board::getPinsAndChecks(
         // Bounds checking
         if (0 <= endRow && endRow <= 7 && 0 <= endCol && endCol <= 7) {
             BasePiece* endPiece = board[endRow][endCol].getPiece();
-
+            // Continue if this square is empty
             if (endPiece == nullptr) {
                 continue;
             }
+            // If the piece is a knight, the knight is checking the king as knights can not pin pieces.
             if (endPiece->getID()[0] == enemyColor && endPiece->getID()[1] == 'N') {
                 inCheck = true;
                 checks.push_back(Check(endRow, endCol, std::get<0>(move), std::get<1>(move)));
@@ -395,12 +425,11 @@ std::tuple<bool, std::vector<Pin>, std::vector<Check> > Board::getPinsAndChecks(
         }
     }
 
-
-
-
     std::tuple<bool, std::vector<Pin>, std::vector<Check> > pinsAndChecks = std::make_tuple(inCheck, pins, checks);
     return pinsAndChecks;
 }
+
+
 
 bool Board::squareUnderAttack(Square& square) {
     // Change turns and get opposing color moves
@@ -426,6 +455,7 @@ bool Board::squareUnderAttack(Square& square) {
     }
     return false;
 }
+
 
 bool Board::getWhiteToPlay() {
     return whiteToPlay;
@@ -563,8 +593,9 @@ std::vector<Move> King::getValidMoves(Board* board) {
             }
         }  
     }
-    std::vector<Move> castlingMoves = getCastlingMoves(board);
 
+    // Kings can also castle kingside and queenside
+    std::vector<Move> castlingMoves = getCastlingMoves(board);
     moves.insert(moves.end(), castlingMoves.begin(), castlingMoves.end());
     return moves;
 }
@@ -576,6 +607,7 @@ std::vector<Move> King::getAttackingMoves(Board* board) {
 std::vector<Move> King::getCastlingMoves(Board* board) {
     std::vector<Move> castlingMoves;
 
+    // If white is to play, get king and queenside castling moves, if possible
     if (board->getWhiteToPlay()) {
         if (board->getCastlingRights().whiteKingSide) {
             std::vector<Move> kingSideCastle = getKingSideCastlingMoves(board);
@@ -586,7 +618,7 @@ std::vector<Move> King::getCastlingMoves(Board* board) {
             castlingMoves.insert(castlingMoves.end(), queenSideCastle.begin(), queenSideCastle.end());
         }
     }
-
+    // If black is to play, get king and queenside castling moves, if possible
     else {
         if (board->getCastlingRights().blackKingSide) {
             std::vector<Move> kingSideCastle = getKingSideCastlingMoves(board);
@@ -606,10 +638,13 @@ std::vector<Move> King::getKingSideCastlingMoves(Board* board) {
     int kingRank = std::get<0>(position);
     int kingFile = std::get<1>(position);
 
+    // To castle kingside, the bishop's and knight's starting square on the kingside must be empty and not under attack
     if (board[0][kingRank][kingFile + 1].getPiece() == nullptr && board[0][kingRank][kingFile + 2].getPiece() == nullptr) {
-        std::tuple<int, int> kingEndSquare = std::make_tuple(kingRank, kingFile + 2);
-        Move kingSideCastleMove(position, kingEndSquare, this, board[0].getSquare(kingEndSquare).getPiece(), true);
-        kingSideCastleMoves.push_back(kingSideCastleMove);
+        if (!board->squareUnderAttack(board[0][kingRank][kingFile + 1]) && !board->squareUnderAttack(board[0][kingRank][kingFile + 2])) {
+            std::tuple<int, int> kingEndSquare = std::make_tuple(kingRank, kingFile + 2);
+            Move kingSideCastleMove(position, kingEndSquare, this, board[0].getSquare(kingEndSquare).getPiece(), true);
+            kingSideCastleMoves.push_back(kingSideCastleMove);
+        }
     }
 
     return kingSideCastleMoves;
@@ -620,10 +655,13 @@ std::vector<Move> King::getQueenSideCastlingMoves(Board* board) {
     int kingRank = std::get<0>(position);
     int kingFile = std::get<1>(position);
 
+    // To castle queenside, the queen's, bishop's, and knight's starting square on the queenside must be empty and not under attack
     if (board[0][kingRank][kingFile - 1].getPiece() == nullptr && board[0][kingRank][kingFile - 2].getPiece() == nullptr && board[0][kingRank][kingFile - 3].getPiece() == nullptr) {
-        std::tuple<int, int> kingEndSquare = std::make_tuple(kingRank, kingFile - 2);
-        Move queenSideCastleMove(position, kingEndSquare, this, board[0].getSquare(kingEndSquare).getPiece(), true);
-        queenSideCastleMoves.push_back(queenSideCastleMove);
+        if (!board->squareUnderAttack(board[0][kingRank][kingFile - 1]) && !board->squareUnderAttack(board[0][kingRank][kingFile - 2]) && !board->squareUnderAttack(board[0][kingRank][kingFile - 3])) {
+            std::tuple<int, int> kingEndSquare = std::make_tuple(kingRank, kingFile - 2);
+            Move queenSideCastleMove(position, kingEndSquare, this, board[0].getSquare(kingEndSquare).getPiece(), true);
+            queenSideCastleMoves.push_back(queenSideCastleMove);
+        }
     }
 
     return queenSideCastleMoves;
