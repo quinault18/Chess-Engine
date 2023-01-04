@@ -53,7 +53,8 @@ void Square::setPieceAtStart(BasePiece* pieceToSet) {
         piece = nullptr;
         return;
     }
-
+    // Creates a new BasePiece object on the square. The address of that piece is then used for 
+    // the remainder of the board's scope
     std::string id = pieceToSet->getID();
     std::tuple<int, int> position = pieceToSet->getPosition();
     switch (id[1]) {

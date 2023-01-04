@@ -481,9 +481,76 @@ Square& Board::getSquare(std::tuple<int, int> loc) {
     return board[std::get<0>(loc)][std::get<1>(loc)];
 }
 
+std::vector<Move> Board::generateAllMoves() {
+
+    std::vector<Move> moves;
+
+    // Used to determine which pieces can move
+    std::tuple<bool, std::vector<Pin>, std::vector<Check> > pinsAndChecks = getPinsAndChecks();
+    char enemyColor = (getWhiteToPlay()) ? 'b' : 'w';
+
+    for (std::vector<Square> rank : board) {
+        for (Square square : rank) {
+            if (square.getPiece() != nullptr && square.getPiece()->getID()[0] != enemyColor) {
+                std::vector<Move> pieceMoves = square.getPiece()->getValidMoves(this);
+                moves.insert(moves.end(), pieceMoves.begin(), pieceMoves.end());
+            }
+        }
+    }
+    return moves;
+}
+
 std::vector<Move> Board::generateMoves() {
     std::vector<Move> moves;
+
+    // Used to determine which pieces can move
+    std::tuple<bool, std::vector<Pin>, std::vector<Check> > pinsAndChecks = getPinsAndChecks();
     char enemyColor = (getWhiteToPlay()) ? 'b' : 'w';
+    
+    int kingRow, kingCol;
+    // Get king locations for check validation
+    if (whiteToPlay) {
+        kingRow = std::get<0>(whiteKingLocation);
+        kingCol = std::get<1>(whiteKingLocation);
+    }
+    else {
+        kingRow = std::get<0>(blackKingLocation);
+        kingCol = std::get<1>(blackKingLocation);
+    }
+
+    // King is in check
+    if (std::get<0>(pinsAndChecks)) {
+        // If only one piece is checking king, need to move king or capture checking piece or block check
+        if (std::get<2>(pinsAndChecks).size() == 1) {
+            std::vector<Move> allMoves = generateAllMoves();
+            Check check = std::get<2>(pinsAndChecks)[0];
+            // Get piece checking
+            BasePiece* pieceChecking = board[check.endRow][check.endCol].getPiece();
+            std::vector<std::tuple<int, int> > validSquares;
+
+            if (pieceChecking->getID()[1] == 'N') {
+                validSquares.push_back(std::make_tuple(check.endRow, check.endCol));
+            }
+            else {
+                for (int i = 1; i < 8; i++) {
+                    std::tuple<int, int> validSquare = std::make_tuple(kingRow + check.dirRow * i, kingCol + check.dirCol * i);
+                    validSquares.push_back(validSquare);
+
+                    if (std::get<0>(validSquare) == check.endRow && std::get<1>(validSquare) == check.endCol) {
+                        break;
+                    }
+                }
+            for (int i = allMoves.size() - 1; i > -1 ; i--) {
+                    if (allMoves[i].pieceMoved->getID()[1] != 'K') {
+                        if (std::count(validSquares.begin(), validSquares.end(), allMoves[i].end)) {
+                            allMoves.erase(allMoves.begin() + i);      
+                        }
+                    }
+                }
+            }
+        }
+
+    }
 
     for (std::vector<Square> rank : board) {
         for (Square square : rank) {
@@ -567,7 +634,7 @@ This method is from the King class and is here as Board is forward declared in B
 */
 std::vector<Move> King::getValidMoves(Board* board) {
     std::vector<Move> moves;
-
+    char allyColor = (board->getWhiteToPlay()) ? 'w' : 'b';
     // Iterate over directions looking for valid moves
     for (std::tuple<int, int> dir : directions) {
 

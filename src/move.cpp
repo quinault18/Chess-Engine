@@ -61,7 +61,6 @@ bool Move::operator!=(const Move other) const {
 }
 
 
-// Move id is used to generate a unique identifier for each move
 int Move::generateMoveID(std::tuple<int, int> t1, std::tuple<int, int> t2) {
     int thousand = std::get<0>(t1);
     int hundred = std::get<1>(t1);

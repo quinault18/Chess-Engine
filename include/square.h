@@ -15,12 +15,19 @@ private:
 
     // Chessboard squares have a location in form (rank, file)
     std::tuple<int, int> location;
+
     // Squares store a piece. If square is empty, piece is nullptr
     BasePiece* piece;
 
 public:
 
-    // Squares take in a (rank, file) location and a piece
+    /**
+     * @brief Construct a new Square object. Squares take in a (rank, file) location and a piece
+     * 
+     * @param rank - integer location of the rank of this square
+     * @param file - integer location of the file of this square
+     * @param piece - pointer to a BasePiece that occupies this square
+     */
     Square(int rank, int file, BasePiece* piece = nullptr);
 
     /*
@@ -36,16 +43,32 @@ public:
     bool operator==(const Square other) const;
     bool operator!=(const Square other) const;
 
-    // Returns (rank, file) location of this square
+    /**
+     * @brief Returns (rank, file) location of this square
+     * 
+     * @return std::tuple<int, int> - location of this square
+     */
     std::tuple<int, int> getLocation();
 
-    // Returns the piece on this square
+    /**
+     * @brief Returns the piece on this square
+     * 
+     * @return BasePiece* - pointer to the piece on this square
+     */
     BasePiece* getPiece();
 
-    // Setup setting pieces
+    /**
+     * @brief Setup setting pieces
+     * 
+     * @param pieceToSet 
+     */
     void setPieceAtStart(BasePiece* pieceToSet);
     
-    // Set the piece of this square
+    /**
+     * @brief Sets the BasePiece* on this square
+     * 
+     * @param pieceToSet - BasePiece* to be on this square
+     */
     void setPiece(BasePiece* pieceToSet);
 };
 

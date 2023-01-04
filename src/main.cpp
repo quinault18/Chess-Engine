@@ -6,6 +6,12 @@
 
 // Dummy main for compilation purposes
 int main() {
-    Board board("rnbqkbnr/ppp1pppp/3p4/1B6/4P3/8/PPPP1PPP/RNBQK1NR b KQkq - 1 2");
-    board.getPinsAndChecks();
+    Board b("3rk3/8/8/8/8/8/8/3K4 w - - 0 1");
+
+    std::vector<Move> all = b.generateAllMoves();
+    std::vector<Move> moves = b.generateMoves();
+
+    std::cout << all.size() << std::endl << moves.size() << std::endl;
+
+    return 0;
 }

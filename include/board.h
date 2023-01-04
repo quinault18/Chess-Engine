@@ -5,6 +5,7 @@
 #include "square.h"
 #include <iostream>
 #include <vector>
+#include <algorithm>
 
 
 struct Pin {
@@ -68,11 +69,12 @@ private:
      */
     void initBoard();
 
+
+public:
+
     // Values for white and black king location
     std::tuple<int, int> whiteKingLocation;
     std::tuple<int, int> blackKingLocation;
-
-public:
 
     /**
      * @brief Default constructor - loads 8x8 board with the standard starting position of the pieces
@@ -203,6 +205,12 @@ public:
      * @return std::vector<Move> - moves that attack squares.
      */
     std::vector<Move> getAttackingMoves();
+
+    /**
+     * @brief Generates all moves on the board for the color to play regardless of checks/pins.
+     * 
+     */
+    std::vector<Move> generateAllMoves();
 
     /**
      * @brief Generates all valid moves on the board for the color to play.

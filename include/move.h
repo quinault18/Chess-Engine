@@ -17,20 +17,26 @@ class Move {
 
         
 
-        /*
-        Move id is used to generate a unique identifier for each move.
-        The move id is in the format as follows:
-            Thousands place - t1[0]
-            Hundreds place  - t1[1]
-            Tens place      - t2[0]
-            Ones place      - t2[1]
+        /**
+         * @brief Move id is used to generate a unique identifier for each move.
+         * The move id is in the format as follows:
+         *   Thousands place - t1[0]
+         *   Hundreds place  - t1[1]
+         *   Tens place      - t2[0]
+         *   Ones place      - t2[1]
         */
         int generateMoveID(std::tuple<int, int> t1, std::tuple<int, int> t2);
 
     public:  
-        /* A move on the chessboard has a starting and ending position, and a piece that moved.
-         If the piece that moved captured another piece, that is stored in the pieceCaptured variable
-        */
+        /**
+         * @brief Construct a new Move object
+         * 
+         * @param start - starting position of the move
+         * @param end - ending position of the move
+         * @param pieceMoved - pointer to the piece that was moved
+         * @param pieceCaptured - pointer to the piece that was captured
+         * @param isCastle - value representing if the move is a castling move
+         */
         Move(std::tuple<int, int> start, std::tuple<int, int> end, BasePiece* pieceMoved, BasePiece* pieceCaptured = nullptr, bool isCastle = false);
        
         /*
@@ -61,18 +67,22 @@ class Move {
         std::map<int, int> rowsToRanks;
         std::map<int, char> colsToFiles;
 
-        /*
-        Returns the move id of this move.
+        /**
+         * @brief Returns the move id of this move.
+         * 
+         * @return int - id of the move
         */
         int getMoveID();
 
-        /*
-        Used for generating the algebraic chess notation of this move.
+        /** 
+         * @brief Used for generating the algebraic chess notation of this move.
+         * 
+         * @return std::string - algebraic notation of this move
         */
         std::string getRankFile(int row, int col);
 
-        /*
-        Print the algebraic chess notation of this move
+        /**
+         * @brief Print the algebraic chess notation of this move
         */
         friend std::ostream& operator<<(std::ostream& os, const Move& move);
 
